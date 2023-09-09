@@ -1,3 +1,0 @@
-[alias]
-xtask = "run --package xtask --"
-integration-test = "test --features integration --profile integration --workspace --test integration"

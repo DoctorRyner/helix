@@ -50,6 +50,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 log = "0.4"
 
 # File picker
+fuzzy-matcher = "0.3"
 nucleo.workspace = true
 ignore = "0.4"
 # markdown doc rendering
