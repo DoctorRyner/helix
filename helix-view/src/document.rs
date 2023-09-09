@@ -1225,7 +1225,7 @@ impl Document {
             insert_spaces: true,
             path: self.path()?.to_str()?.to_owned(),
             indent_size: self.indent_width(),
-            version: 0,
+            version: self.version as usize,
             relative_path: self.relative_path()?.to_str()?.to_owned(),
             language_id: self.language_id()?.to_owned(),
             position,
