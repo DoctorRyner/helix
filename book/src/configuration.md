@@ -37,33 +37,34 @@ Its settings will be merged with the configuration directory `config.toml` and t
 
 ### `[editor]` Section
 
-| Key                         | Description                                                                                                                                                                                                                 | Default                                                       |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `scrolloff`                 | Number of lines of padding around the edge of the screen when scrolling                                                                                                                                                     | `5`                                                           |
-| `mouse`                     | Enable mouse mode                                                                                                                                                                                                           | `true`                                                        |
-| `middle-click-paste`        | Middle click paste support                                                                                                                                                                                                  | `true`                                                        |
-| `scroll-lines`              | Number of lines to scroll per scroll wheel step                                                                                                                                                                             | `3`                                                           |
-| `shell`                     | Shell to use when running external commands                                                                                                                                                                                 | Unix: `["sh", "-c"]`<br/>Windows: `["cmd", "/C"]`             |
-| `line-number`               | Line number display: `absolute` simply shows each line's number, while `relative` shows the distance from the current line. When unfocused or in insert mode, `relative` will still show absolute line numbers              | `absolute`                                                    |
-| `cursorline`                | Highlight all lines with a cursor                                                                                                                                                                                           | `false`                                                       |
-| `cursorcolumn`              | Highlight all columns with a cursor                                                                                                                                                                                         | `false`                                                       |
-| `gutters`                   | Gutters to display: Available are `diagnostics` and `diff` and `line-numbers` and `spacer`, note that `diagnostics` also includes other features like breakpoints, 1-width padding will be inserted if gutters is non-empty | `["diagnostics", "spacer", "line-numbers", "spacer", "diff"]` |
-| `auto-completion`           | Enable automatic pop up of auto-completion                                                                                                                                                                                  | `true`                                                        |
-| `auto-format`               | Enable automatic formatting on save                                                                                                                                                                                         | `true`                                                        |
-| `auto-save`                 | Enable automatic saving on the focus moving away from Helix. Requires [focus event support](https://github.com/helix-editor/helix/wiki/Terminal-Support) from your terminal                                                 | `false`                                                       |
-| `idle-timeout`              | Time in milliseconds since last keypress before idle timers trigger. Used for autocompletion, set to 0 for instant                                                                                                          | `400`                                                         |
-| `preview-completion-insert` | Whether to apply completion item instantly when selected                                                                                                                                                                    | `true`                                                        |
-| `completion-trigger-len`    | The min-length of word under cursor to trigger autocompletion                                                                                                                                                               | `2`                                                           |
-| `completion-replace`        | Set to `true` to make completions always replace the entire word and not just the part before the cursor                                                                                                                    | `false`                                                       |
-| `auto-info`                 | Whether to display info boxes                                                                                                                                                                                               | `true`                                                        |
-| `true-color`                | Set to `true` to override automatic detection of terminal truecolor support in the event of a false negative                                                                                                                | `false`                                                       |
-| `undercurl`                 | Set to `true` to override automatic detection of terminal undercurl support in the event of a false negative                                                                                                                | `false`                                                       |
-| `rulers`                    | List of column positions at which to display the rulers. Can be overridden by language specific `rulers` in `languages.toml` file                                                                                           | `[]`                                                          |
-| `bufferline`                | Renders a line at the top of the editor displaying open buffers. Can be `always`, `never` or `multiple` (only shown if more than one buffer is in use)                                                                      | `never`                                                       |
-| `color-modes`               | Whether to color the mode indicator with different colors depending on the mode itself                                                                                                                                      | `false`                                                       |
-| `text-width`                | Maximum line length. Used for the `:reflow` command and soft-wrapping if `soft-wrap.wrap-at-text-width` is set                                                                                                              | `80`                                                          |
-| `workspace-lsp-roots`       | Directories relative to the workspace root that are treated as LSP roots. Should only be set in `.helix/config.toml`                                                                                                        | `[]`                                                          |
-| `default-line-ending`       | The line ending to use for new documents. Can be `native`, `lf`, `crlf`, `ff`, `cr` or `nel`. `native` uses the platform's native line ending (`crlf` on Windows, otherwise `lf`).                                          | `native`                                                      |
+| Key | Description | Default |
+|--|--|---------|
+| `scrolloff` | Number of lines of padding around the edge of the screen when scrolling | `5` |
+| `mouse` | Enable mouse mode | `true` |
+| `middle-click-paste` | Middle click paste support | `true` |
+| `scroll-lines` | Number of lines to scroll per scroll wheel step | `3` |
+| `shell` | Shell to use when running external commands | Unix: `["sh", "-c"]`<br/>Windows: `["cmd", "/C"]` |
+| `line-number` | Line number display: `absolute` simply shows each line's number, while `relative` shows the distance from the current line. When unfocused or in insert mode, `relative` will still show absolute line numbers | `absolute` |
+| `cursorline` | Highlight all lines with a cursor | `false` |
+| `cursorcolumn` | Highlight all columns with a cursor | `false` |
+| `gutters` | Gutters to display: Available are `diagnostics` and `diff` and `line-numbers` and `spacer`, note that `diagnostics` also includes other features like breakpoints, 1-width padding will be inserted if gutters is non-empty | `["diagnostics", "spacer", "line-numbers", "spacer", "diff"]` |
+| `auto-completion` | Enable automatic pop up of auto-completion | `true` |
+| `auto-format` | Enable automatic formatting on save | `true` |
+| `auto-save` | Enable automatic saving on the focus moving away from Helix. Requires [focus event support](https://github.com/helix-editor/helix/wiki/Terminal-Support) from your terminal | `false` |
+| `idle-timeout` | Time in milliseconds since last keypress before idle timers trigger. Used for autocompletion, set to 0 for instant | `250` |
+| `preview-completion-insert` | Whether to apply completion item instantly when selected | `true` |
+| `completion-trigger-len` | The min-length of word under cursor to trigger autocompletion | `2` |
+| `completion-replace` | Set to `true` to make completions always replace the entire word and not just the part before the cursor | `false` |
+| `auto-info` | Whether to display info boxes | `true` |
+| `true-color` | Set to `true` to override automatic detection of terminal truecolor support in the event of a false negative | `false` |
+| `undercurl` | Set to `true` to override automatic detection of terminal undercurl support in the event of a false negative | `false` |
+| `rulers` | List of column positions at which to display the rulers. Can be overridden by language specific `rulers` in `languages.toml` file | `[]` |
+| `bufferline` | Renders a line at the top of the editor displaying open buffers. Can be `always`, `never` or `multiple` (only shown if more than one buffer is in use) | `never` |
+| `color-modes` | Whether to color the mode indicator with different colors depending on the mode itself | `false` |
+| `text-width` | Maximum line length. Used for the `:reflow` command and soft-wrapping if `soft-wrap.wrap-at-text-width` is set | `80` |
+| `workspace-lsp-roots` | Directories relative to the workspace root that are treated as LSP roots. Should only be set in `.helix/config.toml` | `[]` |
+| `default-line-ending` | The line ending to use for new documents. Can be `native`, `lf`, `crlf`, `ff`, `cr` or `nel`. `native` uses the platform's native line ending (`crlf` on Windows, otherwise `lf`). | `native` |
+| `insert-final-newline` | Whether to automatically insert a trailing line-ending on write if missing | `true` |
 
 ### `[editor.statusline]` Section
 
@@ -163,6 +164,7 @@ not visible in the Helix file picker and global search.
 
 All git related options are only enabled in a git repository.
 
+<<<<<<< HEAD
 | Key                 | Description                                                                                             | Default             |
 | ------------------- | ------------------------------------------------------------------------------------------------------- | ------------------- |
 | `hidden`            | Enables ignoring hidden files                                                                           | true                |
@@ -174,6 +176,19 @@ All git related options are only enabled in a git repository.
 | `git-global`        | Enables reading global `.gitignore`, whose path is specified in git's config: `core.excludefile` option | true                |
 | `git-exclude`       | Enables reading `.git/info/exclude` files                                                               | true                |
 | `max-depth`         | Set with an integer value for maximum depth to recurse                                                  | Defaults to `None`. |
+=======
+| Key | Description | Default |
+|--|--|---------|
+|`hidden` | Enables ignoring hidden files | `true`
+|`follow-symlinks` | Follow symlinks instead of ignoring them | `true`
+|`deduplicate-links` | Ignore symlinks that point at files already shown in the picker | `true`
+|`parents` | Enables reading ignore files from parent directories | `true`
+|`ignore` | Enables reading `.ignore` files | `true`
+|`git-ignore` | Enables reading `.gitignore` files | `true`
+|`git-global` | Enables reading global `.gitignore`, whose path is specified in git's config: `core.excludesfile` option | `true`
+|`git-exclude` | Enables reading `.git/info/exclude` files | `true`
+|`max-depth` | Set with an integer value for maximum depth to recurse | Defaults to `None`.
+>>>>>>> upstream/master
 
 ### `[editor.auto-pairs]` Section
 
