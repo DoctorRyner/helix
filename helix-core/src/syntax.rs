@@ -1,3 +1,5 @@
+mod tree_cursor;
+
 use crate::{
     auto_pairs::AutoPairs,
     chars::char_is_line_ending,
@@ -30,6 +32,8 @@ use once_cell::sync::{Lazy, OnceCell};
 use serde::{ser::SerializeSeq, Deserialize, Serialize};
 
 use helix_loader::grammar::{get_language, load_runtime_file};
+
+pub use tree_cursor::TreeCursor;
 
 fn deserialize_regex<'de, D>(deserializer: D) -> Result<Option<Regex>, D::Error>
 where
@@ -1429,6 +1433,22 @@ impl Syntax {
             .descendant_for_byte_range(start, end)
     }
 
+    pub fn walk(&self) -> TreeCursor<'_> {
+        let mut injection_ranges = HashMap::with_capacity(self.layers.len());
+
+        for (layer_id, layer) in &self.layers {
+            // Skip the root layer
+            if layer.parent.is_none() {
+                continue;
+            }
+            for range in layer.ranges.iter() {
+                injection_ranges.insert(range.start_byte..range.end_byte, layer_id);
+            }
+        }
+
+        TreeCursor::new(&self.layers, self.root, injection_ranges)
+    }
+
     // Commenting
     // comment_strings_for_pos
     // is_commented
@@ -1663,7 +1683,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::{iter, mem, ops, str, usize};
 use tree_sitter::{
     Language as Grammar, Node, Parser, Point, Query, QueryCaptures, QueryCursor, QueryError,
-    QueryMatch, Range, TextProvider, Tree, TreeCursor,
+    QueryMatch, Range, TextProvider, Tree,
 };
 
 const CANCELLATION_CHECK_INTERVAL: usize = 100;
@@ -2592,7 +2612,7 @@ pub fn pretty_print_tree<W: fmt::Write>(fmt: &mut W, node: Node) -> fmt::Result 
 
 fn pretty_print_tree_impl<W: fmt::Write>(
     fmt: &mut W,
-    cursor: &mut TreeCursor,
+    cursor: &mut tree_sitter::TreeCursor,
     depth: usize,
 ) -> fmt::Result {
     let node = cursor.node();
@@ -2902,7 +2922,7 @@ mod test {
         // rule but `name` and `body` belong to an unnamed helper `_method_rest`.
         // This can cause a bug with a pretty-printing implementation that
         // uses `Node::field_name_for_child` to determine field names but is
-        // fixed when using `TreeCursor::field_name`.
+        // fixed when using `tree_sitter::TreeCursor::field_name`.
         let source = "def self.method_name
           true
         end";
