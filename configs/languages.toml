@@ -1,0 +1,100 @@
+[language-server.copilot]
+command = "copilot"
+args = ["--stdio"]
+
+[language-server.vtsls]
+command = "vtsls"
+args = ["--stdio"]
+
+# [language-server.vtsls.config]
+# typescript.tsserver.experimental.enableProjectDiagnostics = true
+
+[language-server.emmet-ls]
+command="emmet-ls"
+args = ["--stdio"]
+
+[language-server.efm]
+command = "efm-langserver"
+
+[language-server.eslint]
+args = ["--stdio"]
+command = "vscode-eslint-language-server"
+
+[language-server.vscode-json-language-server.config]
+json = { validate = { enable = true }, format = { enable = true } }
+provideFormatter = true
+
+[language-server.vscode-css-language-server.config]
+css = { validate = { enable = true } }
+scss = { validate = { enable = true } }
+less = { validate = { enable = true } }
+provideFormatter = true
+
+[language-server.eslint.config]
+validate = "on"
+experimental = { useFlatConfig = false }
+rulesCustomizations = []
+run = "onType"
+problems = { shortenToSingleLine = false }
+nodePath = ""
+
+[language-server.eslint.config.codeAction]
+[language-server.eslint.config.codeAction.disableRuleComment]
+enable = true
+location = "separateLine"
+
+[language-server.eslint.config.codeAction.showDocumentation]
+enable = true
+
+[language-server.eslint.config.codeActionOnSave]
+enable = true
+mode = "fixAll"
+
+[language-server.eslint.config.workingDirectory]
+mode = "location"
+
+[[language]]
+name = "typescript"
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+file-types = ["ts"]
+auto-format = true
+language-servers = [
+  { name = "vtsls", except-features = ["format"] },
+  { name = "copilot" },
+  { name = "eslint", except-features = [ "format" ] },
+  { name = "emmet-ls" },
+]
+
+[[language]]
+name = "tsx"
+formatter = { command = "prettier", args = ["--stdin-filepath", "file.tsx"] }
+file-types=["tsx"]
+auto-format = true
+language-servers = [
+  { name = "vtsls", except-features = ["format"] },
+  { name = "copilot" },
+  { name = "eslint", except-features = [ "format" ] },
+  { name = "emmet-ls" },
+]
+
+[[language]]
+name = "json"
+formatter = { command = "prettier", args = [ "--parser", "json" ] }
+auto-format = true
+
+[[language]]
+name = "html"
+language-servers = [ "vscode-html-language-server", "emmet-ls" ]
+formatter = { command = 'prettier', args = ["--parser", "html"] }
+auto-format = true
+
+[[language]]
+name = "css"
+language-servers = [ "vscode-css-language-server", "emmet-ls", "copilot" ]
+formatter = { command = 'prettier', args = ["--parser", "css"] }
+auto-format = true
+
+[[language]]
+name = "cpp"
+language-servers = [ "clangd", "copilot" ]
+

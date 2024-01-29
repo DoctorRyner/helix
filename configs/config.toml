@@ -1,0 +1,76 @@
+theme = "adwaita-dark"
+# theme = "fleet_dark"
+
+[editor.lsp]
+display-messages = true
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor]
+bufferline = "multiple"
+true-color = true
+auto-format = true
+auto-save = true
+undercurl = true
+idle-timeout = 0
+cursorline = true
+completion-trigger-len = 1
+completion-replace = true
+
+
+[editor.file-picker]
+hidden = false
+
+[keys.normal]
+"ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
+a = ["insert_mode", "move_char_right", "collapse_selection"]
+"$" = "goto_line_end"
+"A-/" = "toggle_comments"
+G = "goto_file_end"
+y = ":clipboard-yank"
+p = ":clipboard-paste-before"
+"§" = "select_textobject_inner"
+"{" = ":buffer-previous"
+"}" = ":buffer-next"
+"A-left" = "move_prev_word_start"
+"A-right" = ["move_next_word_end", "move_char_right"]
+"A-f" = ["move_next_word_end", "move_char_right" , "collapse_selection"]
+"A-b" = ["move_prev_word_start", "collapse_selection"]
+"A-up" = ["expand_selection"]
+"A-down" = ["shrink_selection"]
+w = ["move_prev_word_start", "collapse_selection"]
+e = ["move_next_word_start", "collapse_selection"]
+f = ["move_next_word_start", "collapse_selection"]
+b = ["move_prev_word_start", "collapse_selection"]
+"minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
+"0" = "goto_line_start"
+
+[keys.insert]
+"§" = "completion"
+"A-{" = ":buffer-previous"
+"A-}" = ":buffer-next"
+"up" = "move_line_up"
+"down" = "move_line_down"
+"left" = "move_char_left"
+"right" = "move_char_right"
+"A-left" = "move_prev_word_start"
+"A-right" = ["move_next_word_end", "move_char_right"]
+"A-f" = ["move_next_word_end", "move_char_right", "collapse_selection"]
+"A-b" = ["move_prev_word_start", "collapse_selection"]
+"esc" = ["normal_mode", ":w"]
+
+[keys.normal.space]
+q = ":write-quit"
+c = ":buffer-close"
+f = "file_picker_in_current_directory"
+F = "file_picker"
+
+[keys.select]
+y = [":clipboard-yank", "normal_mode"]
+"0" = "goto_line_start"
+"$" = "goto_line_end"
+G = "goto_file_end"
+
