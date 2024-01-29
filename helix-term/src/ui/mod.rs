@@ -3,7 +3,6 @@ pub mod copilot_picker;
 mod document;
 pub(crate) mod editor;
 mod explorer;
-mod fuzzy_match;
 mod info;
 pub mod lsp;
 mod markdown;
