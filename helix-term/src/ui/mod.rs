@@ -22,6 +22,7 @@ use crate::job::{self, Callback};
 pub use completion::{Completion, CompletionItem};
 pub use editor::EditorView;
 pub use explorer::Explorer;
+use helix_stdx::rope;
 pub use markdown::Markdown;
 pub use menu::Menu;
 pub use picker::{DynamicPicker, FileLocation, Picker};
@@ -31,8 +32,6 @@ pub use spinner::{ProgressSpinners, Spinner};
 pub use text::Text;
 pub use tree::{TreeOp, TreeView, TreeViewItem};
 
-use helix_core::regex::Regex;
-use helix_core::regex::RegexBuilder;
 use helix_view::Editor;
 
 use std::path::PathBuf;
@@ -68,7 +67,22 @@ pub fn regex_prompt(
     prompt: std::borrow::Cow<'static, str>,
     history_register: Option<char>,
     completion_fn: impl FnMut(&Editor, &str) -> Vec<prompt::Completion> + 'static,
-    fun: impl Fn(&mut crate::compositor::Context, Regex, PromptEvent) + 'static,
+    fun: impl Fn(&mut crate::compositor::Context, rope::Regex, PromptEvent) + 'static,
+) {
+    raw_regex_prompt(
+        cx,
+        prompt,
+        history_register,
+        completion_fn,
+        move |cx, regex, _, event| fun(cx, regex, event),
+    );
+}
+pub fn raw_regex_prompt(
+    cx: &mut crate::commands::Context,
+    prompt: std::borrow::Cow<'static, str>,
+    history_register: Option<char>,
+    completion_fn: impl FnMut(&Editor, &str) -> Vec<prompt::Completion> + 'static,
+    fun: impl Fn(&mut crate::compositor::Context, rope::Regex, &str, PromptEvent) + 'static,
 ) {
     let (view, doc) = current!(cx.editor);
     let doc_id = view.doc;
@@ -99,10 +113,13 @@ pub fn regex_prompt(
                         false
                     };
 
-                    match RegexBuilder::new(input)
-                        .case_insensitive(case_insensitive)
-                        .multi_line(true)
-                        .build()
+                    match rope::RegexBuilder::new()
+                        .syntax(
+                            rope::Config::new()
+                                .case_insensitive(case_insensitive)
+                                .multi_line(true),
+                        )
+                        .build(input)
                     {
                         Ok(regex) => {
                             let (view, doc) = current!(cx.editor);
@@ -115,7 +132,7 @@ pub fn regex_prompt(
                                 view.jumps.push((doc_id, snapshot.clone()));
                             }
 
-                            fun(cx, regex, event);
+                            fun(cx, regex, input, event);
 
                             let (view, doc) = current!(cx.editor);
                             view.ensure_cursor_in_view(doc, config.scrolloff);
