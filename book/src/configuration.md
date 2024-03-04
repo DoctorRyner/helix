@@ -167,19 +167,6 @@ not visible in the Helix file picker and global search.
 
 All git related options are only enabled in a git repository.
 
-<<<<<<< HEAD
-| Key                 | Description                                                                                             | Default             |
-| ------------------- | ------------------------------------------------------------------------------------------------------- | ------------------- |
-| `hidden`            | Enables ignoring hidden files                                                                           | true                |
-| `follow-symlinks`   | Follow symlinks instead of ignoring them                                                                | true                |
-| `deduplicate-links` | Ignore symlinks that point at files already shown in the picker                                         | true                |
-| `parents`           | Enables reading ignore files from parent directories                                                    | true                |
-| `ignore`            | Enables reading `.ignore` files                                                                         | true                |
-| `git-ignore`        | Enables reading `.gitignore` files                                                                      | true                |
-| `git-global`        | Enables reading global `.gitignore`, whose path is specified in git's config: `core.excludefile` option | true                |
-| `git-exclude`       | Enables reading `.git/info/exclude` files                                                               | true                |
-| `max-depth`         | Set with an integer value for maximum depth to recurse                                                  | Defaults to `None`. |
-=======
 | Key | Description | Default |
 |--|--|---------|
 |`hidden` | Enables ignoring hidden files | `true`
@@ -191,7 +178,6 @@ All git related options are only enabled in a git repository.
 |`git-global` | Enables reading global `.gitignore`, whose path is specified in git's config: `core.excludesfile` option | `true`
 |`git-exclude` | Enables reading `.git/info/exclude` files | `true`
 |`max-depth` | Set with an integer value for maximum depth to recurse | Defaults to `None`.
->>>>>>> upstream/master
 
 Ignore files can be placed locally as `.ignore` or put in your home directory as `~/.ignore`. They support the usual ignore and negative ignore (unignore) rules used in `.gitignore` files.
 
@@ -402,3 +388,26 @@ Sets explorer side width and style.
 | -------------- | ------------------------------------------- | ------- |
 | `column-width` | explorer side width                         | 30      |
 | `position`     | explorer widget position, `left` or `right` | `left`  |
+
+Options for navigating and editing using tab key.
+
+| Key        | Description | Default |
+|------------|-------------|---------|
+| `enable` | If set to true, then when the cursor is in a position with non-whitespace to its left, instead of inserting a tab, it will run `move_parent_node_end`. If there is only whitespace to the left, then it inserts a tab as normal. With the default bindings, to explicitly insert a tab character, press Shift-tab. | `true` |
+| `supersede-menu` | Normally, when a menu is on screen, such as when auto complete is triggered, the tab key is bound to cycling through the items. This means when menus are on screen, one cannot use the tab key to trigger the `smart-tab` command. If this option is set to true, the `smart-tab` command always takes precedence, which means one cannot use the tab key to cycle through menu items. One of the other bindings must be used instead, such as arrow keys or `C-n`/`C-p`. | `false` |
+
+
+Due to lack of support for S-tab in some terminals, the default keybindings don't fully embrace smart-tab editing experience. If you enjoy smart-tab navigation and a terminal that supports the [Enhanced Keyboard protocol](https://github.com/helix-editor/helix/wiki/Terminal-Support#enhanced-keyboard-protocol), consider setting extra keybindings:
+
+```
+[keys.normal]
+tab = "move_parent_node_end"
+S-tab = "move_parent_node_start"
+
+[keys.insert]
+S-tab = "move_parent_node_start"
+
+[keys.select]
+tab = "extend_parent_node_end"
+S-tab = "extend_parent_node_start"
+```
