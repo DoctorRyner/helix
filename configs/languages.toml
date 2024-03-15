@@ -64,7 +64,6 @@ mode = "location"
 name = "typescript"
 formatter = { command = 'prettier', args = ["--parser", "typescript"] }
 file-types = ["ts"]
-auto-format = true
 language-servers = [
   { name = "typescript-language-server", except-features = ["format"] },
   { name = "copilot" },
@@ -76,7 +75,6 @@ language-servers = [
 name = "tsx"
 formatter = { command = "prettier", args = ["--stdin-filepath", "file.tsx"] }
 file-types=["tsx"]
-auto-format = true
 language-servers = [
   { name = "typescript-language-server", except-features = ["format"] },
   { name = "copilot" },
@@ -85,23 +83,33 @@ language-servers = [
 ]
 
 [[language]]
+name = "haskell"
+file-types=["hs"]
+language-servers = [
+  { name = "haskell-language-server" },
+  { name = "copilot" },
+]
+
+[[language]]
 name = "json"
 formatter = { command = "prettier", args = [ "--parser", "json" ] }
-auto-format = true
 
 [[language]]
 name = "html"
 language-servers = [ "vscode-html-language-server", "emmet-ls" ]
 formatter = { command = 'prettier', args = ["--parser", "html"] }
-auto-format = true
 
 [[language]]
 name = "css"
 language-servers = [ "vscode-css-language-server", "emmet-ls", "copilot" ]
 formatter = { command = 'prettier', args = ["--parser", "css"] }
-auto-format = true
 
 [[language]]
 name = "cpp"
 language-servers = [ "clangd", "copilot" ]
+
+[[language]]
+name = "svelte"
+language-servers = [ "svelteserver", "copilot" ]
+formatter = { command = 'prettier', args = ["--parser", "svelte"] }
 
