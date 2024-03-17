@@ -43,11 +43,11 @@ label = "honey"
 # TODO: diferentiate doc comment
 # concat (ERROR) @error.syntax and "MISSING ;" selectors for errors
 
-"ui.background" = { bg = "midnight" }
+"ui.background" = { bg = "midnight", fg = "#2f3137"}
 "ui.background.separator" = { fg = "comet" }
 "ui.linenr" = { fg = "#5e5c64" }
 "ui.linenr.selected" = { fg = "#9a9996", modifiers = ["bold"] }
-"ui.statusline" = { fg = "#DEDDDA", bg = "midnight" }
+"ui.statusline" = { fg = "#DEDDDA", bg = "revolver" }
 "ui.statusline.inactive" = { fg = "#5d5c63", bg = "revolver" }
 "ui.bufferline" = { fg = "#5d5d63", bg = "midnight" }
 "ui.bufferline.active" = { fg = "#dedddb", bg = "revolver" }
@@ -74,7 +74,7 @@ label = "honey"
 "ui.highlight.frameline" = { bg = "#634450" }
 "ui.debug" = { fg = "#634450" }
 "ui.debug.breakpoint" = { fg = "apricot" }
-"ui.menu" = { fg = "#DEDDDA", bg = "revolver" }
+"ui.menu" = { fg = "#DEDDDA", bg = "#0B0D11" }
 "ui.menu.selected" = { fg = "revolver", bg = "#CBCAC7" }
 "ui.menu.scroll" = { fg = "#9a9996", bg = "#5e5c64" }
 
