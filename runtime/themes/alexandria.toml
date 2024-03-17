@@ -51,7 +51,7 @@ label = "honey"
 "ui.statusline.inactive" = { fg = "#5d5c63", bg = "revolver" }
 "ui.bufferline" = { fg = "#5d5d63", bg = "midnight" }
 "ui.bufferline.active" = { fg = "#dedddb", bg = "revolver" }
-"ui.popup" = { bg = "revolver" }
+"ui.popup" = { bg = "#0B0D11", fg = "#61687A" }
 "ui.window" = { fg = "bossanova" }
 "ui.help" = { bg = "#463380", fg = "#0A0923" }
 
