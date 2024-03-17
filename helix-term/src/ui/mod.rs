@@ -11,7 +11,7 @@ pub mod overlay;
 pub mod picker;
 pub mod popup;
 mod prompt;
-mod spinner;
+mod spinnerhttps://github.com/the-mikedavis/helix/tree/md-tree-sitter-motions-across-textobjects;
 mod statusline;
 mod text;
 mod tree;
