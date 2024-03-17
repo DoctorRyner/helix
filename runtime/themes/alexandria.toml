@@ -1,4 +1,4 @@
-attribute = "lilac"
+attribute = "#f1c67a"
 keyword = "#bf8ed8"
 "keyword.directive" = "lilac" # -- preprocessor comments (#if in C)
 namespace = "#f19b99"
