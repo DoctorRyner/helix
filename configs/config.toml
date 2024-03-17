@@ -1,5 +1,4 @@
-theme = "adwaita-dark"
-# theme = "fleet_dark"
+theme = "alexandria"
 
 [editor.lsp]
 display-messages = true
