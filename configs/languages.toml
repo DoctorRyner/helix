@@ -110,6 +110,10 @@ language-servers = [ "clangd", "copilot" ]
 
 [[language]]
 name = "svelte"
-language-servers = [ "svelteserver", "copilot" ]
+language-servers = [
+  "svelteserver",
+  "copilot",
+  { name = "eslint", except-features = [ "format" ] }
+]
 formatter = { command = 'prettier', args = ["--parser", "svelte"] }
 
