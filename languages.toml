@@ -367,7 +367,6 @@ scope = "source.json"
 injection-regex = "json"
 file-types = [
   "json",
-  "jsonc",
   "arb",
   "ipynb",
   "geojson",
@@ -396,6 +395,15 @@ indent = { tab-width = 2, unit = "  " }
 name = "json"
 source = { git = "https://github.com/tree-sitter/tree-sitter-json", rev = "73076754005a460947cafe8e03a8cf5fa4fa2938" }
 
+[[language]]
+name = "jsonc"
+scope = "source.json"
+injection-regex = "jsonc"
+file-types = ["jsonc"]
+grammar = "json"
+language-servers = [ "vscode-json-language-server" ]
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
 
 [[language]]
 name = "json5"
@@ -931,6 +939,29 @@ indent = { tab-width = 4, unit = "    " }
 [[grammar]]
 name = "php"
 source = { git = "https://github.com/tree-sitter/tree-sitter-php", rev = "f860e598194f4a71747f91789bf536b393ad4a56" }
+
+[[language]]
+name = "php-only"
+scope = "source.php-only"
+injection-regex = "php-only"
+file-types = []
+indent = { tab-width = 4, unit = "    " }
+roots = ["composer.json", "index.php"]
+
+[[grammar]]
+name = "php-only"
+source = { git = "https://github.com/tree-sitter/tree-sitter-php", rev = "cf1f4a0f1c01c705c1d6cf992b104028d5df0b53", subpath = "php_only" }
+
+[[language]]
+name = "blade"
+scope = "source.blade.php"
+file-types = [{ glob = "*.blade.php" }, "blade"]
+injection-regex = "blade"
+roots = ["composer.json", "index.php"]
+
+[[grammar]]
+name = "blade"
+source = { git = "https://github.com/EmranMR/tree-sitter-blade", rev = "4c66efe1e05c639c555ee70092021b8223d2f440" }
 
 [[language]]
 name = "twig"
@@ -1522,7 +1553,7 @@ source = { git = "https://github.com/camdencheek/tree-sitter-dockerfile", rev = 
 name = "docker-compose"
 scope = "source.yaml.docker-compose"
 roots = ["docker-compose.yaml", "docker-compose.yml"]
-language-servers = [ "docker-compose-langserver" ]
+language-servers = [ "docker-compose-langserver", "yaml-language-server" ]
 file-types = [{ glob = "docker-compose.yaml" }, { glob = "docker-compose.yml" }]
 comment-token = "#"
 indent = { tab-width = 2, unit = "  " }
@@ -2896,11 +2927,12 @@ scope = "source.hurl"
 injection-regex = "hurl"
 file-types = ["hurl"]
 comment-token = "#"
+formatter = { command = "hurlfmt" }
 indent = { tab-width = 2, unit = "  " }
 
 [[grammar]]
 name = "hurl"
-source = { git = "https://github.com/pfeiferj/tree-sitter-hurl", rev = "264c42064b61ee21abe88d0061f29a0523352e22" }
+source = { git = "https://github.com/pfeiferj/tree-sitter-hurl", rev = "cd1a0ada92cc73dd0f4d7eedc162be4ded758591" }
 
 [[language]]
 name = "markdoc"
@@ -3202,6 +3234,18 @@ name = "hocon"
 source = { git = "https://github.com/antosha417/tree-sitter-hocon", rev = "c390f10519ae69fdb03b3e5764f5592fb6924bcc" }
 
 [[language]]
+name = "koka"
+scope = "source.koka"
+injection-regex = "koka"
+file-types = ["kk"]
+comment-token = "//"
+indent = { tab-width = 8, unit = "  " }
+
+[[grammar]]
+name = "koka"
+source = { git = "https://github.com/mtoohey31/tree-sitter-koka", rev = "2527e152d4b6a79fd50aebd8d0b4b4336c94a034" }
+
+[[language]]
 name = "tact"
 scope = "source.tact"
 injection-regex = "tact"
@@ -3242,7 +3286,7 @@ indent = { tab-width = 2, unit = "  " }
 
 [[grammar]]
 name = "groovy"
-source = { git = "https://github.com/Decodetalkers/tree-sitter-groovy", rev = "7e023227f46fee428b16a0288eeb0f65ee2523ec" }
+source = { git = "https://github.com/murtaza64/tree-sitter-groovy", rev = "235009aad0f580211fc12014bb0846c3910130c1" }
 
 [[language]]
 name = "fidl"
@@ -3287,3 +3331,27 @@ indent = { tab-width = 2, unit = "  " }
 [[grammar]]
 name = "ld"
 source = { git = "https://github.com/mtoohey31/tree-sitter-ld", rev = "81978cde3844bfc199851e39c80a20ec6444d35e" }
+
+[[language]]
+name = "hyprlang"
+scope = "source.hyprlang"
+roots = ["hyprland.conf"]
+file-types = [ { glob = "hyprland.conf"} ]
+comment-token = "#"
+grammar = "hyprlang"
+
+[[grammar]]
+name = "hyprlang"
+source = { git = "https://github.com/tree-sitter-grammars/tree-sitter-hyprlang", rev = "27af9b74acf89fa6bed4fb8cb8631994fcb2e6f3"}
+
+[[language]]
+name = "supercollider"
+scope = "source.supercollider"
+injection-regex = "supercollider"
+file-types = ["scd", "sc", "quark"]
+comment-token = "//"
+indent = { tab-width = 4, unit = "\t" }
+
+[[grammar]]
+name = "supercollider"
+source = { git = "https://github.com/madskjeldgaard/tree-sitter-supercollider", rev = "3b35bd0fded4423c8fb30e9585c7bacbcd0e8095" }
