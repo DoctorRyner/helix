@@ -1138,7 +1138,10 @@ scope = "source.svelte"
 injection-regex = "svelte"
 file-types = ["svelte"]
 indent = { tab-width = 2, unit = "  " }
-language-servers = [ "svelteserver" ]
+language-servers = [
+  "svelteserver",
+  { name = "eslint", except-features = [ "format" ] }
+]
 
 [[grammar]]
 name = "svelte"
