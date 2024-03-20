@@ -19,6 +19,9 @@ cursorline = true
 completion-trigger-len = 1
 completion-replace = true
 
+[editor.soft-wrap]
+enable = true
+
 [editor.indent-guides]
 render = true
 character = "┆" # Some characters that work well: "▏", "┆", "┊", "⸽"
@@ -43,7 +46,7 @@ hidden = false
 "ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
 a = ["insert_mode", "move_char_right", "collapse_selection"]
 "$" = "goto_line_end"
-"A-/" = "toggle_comments"
+# "A-/" = "toggle_comments"
 G = "goto_file_end"
 y = ":clipboard-yank"
 p = ":clipboard-paste-before"
@@ -68,8 +71,10 @@ b = ["move_prev_word_start", "collapse_selection"]
 "C-i" = ["move_line_up", "collapse_selection"]
 "C-w" = ["move_prev_word_start", "collapse_selection"]
 "C-f" = ["move_next_word_start", "collapse_selection"]
-"S-up" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
-"S-down" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
+"A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"S-up" = ["half_page_up"]
+"S-down" = ["half_page_down"]
 
 [keys.insert]
 "§" = "completion"
@@ -84,8 +89,11 @@ b = ["move_prev_word_start", "collapse_selection"]
 "A-f" = ["move_next_word_end", "move_char_right", "collapse_selection"]
 "A-b" = ["move_prev_word_start", "collapse_selection"]
 # "esc" = ["normal_mode", ":w"]
-"S-up" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
-"S-down" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
+"A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"S-up" = ["half_page_up"]
+"S-down" = ["half_page_down"]
+
 
 [keys.normal.space]
 q = ":write-quit"
@@ -103,8 +111,10 @@ n = "move_char_left"
 o = "move_char_right"
 e = "move_line_down"
 i = "move_line_up"
-"S-up" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
-"S-down" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
+"A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
+"S-up" = ["half_page_up"]
+"S-down" = ["half_page_down"]
 w = "extend_prev_word_start"
 f = "extend_next_word_start"
 

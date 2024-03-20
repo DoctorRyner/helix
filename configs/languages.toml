@@ -113,3 +113,6 @@ name = "svelte"
 language-servers = [ "svelteserver", "copilot" ]
 formatter = { command = 'prettier', args = ["--parser", "svelte"] }
 
+[[language]]
+name = "rust"
+language-servers = [ "rust-analyzer", "copilot" ]
