@@ -24,8 +24,12 @@ args = ["--stdio"]
 command = "efm-langserver"
 
 [language-server.eslint]
-args = ["--stdio"]
 command = "vscode-eslint-language-server"
+args = ["--stdio"]
+
+[language-server.biome]
+command = "biome"
+args = ["lsp-proxy", "--config-path", "biome.json"]
 
 [language-server.vscode-json-language-server.config]
 json = { validate = { enable = true }, format = { enable = true } }
@@ -95,6 +99,11 @@ name = "json"
 formatter = { command = "prettier", args = [ "--parser", "json" ] }
 
 [[language]]
+name = "yaml"
+formatter = { command = "prettier", args = [ "--parser", "yaml" ] }
+language-servers = ["yaml-language-server", "copilot"]
+
+[[language]]
 name = "html"
 language-servers = [ "vscode-html-language-server", "emmet-ls" ]
 formatter = { command = 'prettier', args = ["--parser", "html"] }
@@ -111,8 +120,16 @@ language-servers = [ "clangd", "copilot" ]
 [[language]]
 name = "svelte"
 language-servers = [ "svelteserver", "copilot" ]
-formatter = { command = 'prettier', args = ["--parser", "svelte"] }
 
 [[language]]
 name = "rust"
 language-servers = [ "rust-analyzer", "copilot" ]
+
+[[language]]
+name = "toml"
+language-servers = [ "taplo", "copilot" ]
+
+[[language]]
+name = "go"
+language-servers = [ "gopls", "copilot" ]
+
