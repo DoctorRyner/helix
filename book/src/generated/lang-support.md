@@ -1,5 +1,6 @@
 | Language | Syntax Highlighting | Treesitter Textobjects | Auto Indent | Default LSP |
 | --- | --- | --- | --- | --- |
+| ada | ✓ | ✓ |  | `ada_language_server`, `ada_language_server` |
 | agda | ✓ |  |  |  |
 | astro | ✓ |  |  |  |
 | awk | ✓ | ✓ |  | `awk-language-server` |
@@ -8,6 +9,7 @@
 | beancount | ✓ |  |  |  |
 | bibtex | ✓ |  |  | `texlab` |
 | bicep | ✓ |  |  | `bicep-langserver` |
+| bitbake | ✓ |  |  | `bitbake-language-server` |
 | blade | ✓ |  |  |  |
 | blueprint | ✓ |  |  | `blueprint-compiler` |
 | c | ✓ | ✓ | ✓ | `clangd` |
@@ -59,6 +61,7 @@
 | git-ignore | ✓ |  |  |  |
 | git-rebase | ✓ |  |  |  |
 | gleam | ✓ | ✓ |  | `gleam` |
+| glimmer | ✓ |  |  | `ember-language-server` |
 | glsl | ✓ | ✓ | ✓ |  |
 | gn | ✓ |  |  |  |
 | go | ✓ | ✓ | ✓ | `gopls`, `golangci-lint-langserver` |
@@ -66,13 +69,14 @@
 | gomod | ✓ |  |  | `gopls` |
 | gotmpl | ✓ |  |  | `gopls` |
 | gowork | ✓ |  |  | `gopls` |
-| graphql | ✓ |  |  | `graphql-lsp` |
+| graphql | ✓ | ✓ |  | `graphql-lsp` |
 | groovy | ✓ |  |  |  |
 | hare | ✓ |  |  |  |
 | haskell | ✓ | ✓ |  | `haskell-language-server-wrapper` |
 | haskell-persistent | ✓ |  |  |  |
 | hcl | ✓ | ✓ | ✓ | `terraform-ls` |
 | heex | ✓ | ✓ |  | `elixir-ls` |
+| helm | ✓ |  |  | `helm_ls` |
 | hocon | ✓ |  | ✓ |  |
 | hoon | ✓ |  |  |  |
 | hosts | ✓ |  |  |  |
@@ -87,7 +91,7 @@
 | javascript | ✓ | ✓ | ✓ | `typescript-language-server` |
 | jinja | ✓ |  |  |  |
 | jsdoc | ✓ |  |  |  |
-| json | ✓ |  | ✓ | `vscode-json-language-server` |
+| json | ✓ | ✓ | ✓ | `vscode-json-language-server` |
 | json5 | ✓ |  |  |  |
 | jsonc | ✓ |  | ✓ | `vscode-json-language-server` |
 | jsonnet | ✓ |  |  | `jsonnet-language-server` |
@@ -125,6 +129,7 @@
 | ocaml | ✓ |  | ✓ | `ocamllsp` |
 | ocaml-interface | ✓ |  |  | `ocamllsp` |
 | odin | ✓ |  | ✓ | `ols` |
+| ohm | ✓ | ✓ | ✓ |  |
 | opencl | ✓ | ✓ | ✓ | `clangd` |
 | openscad | ✓ |  |  | `openscad-lsp` |
 | org | ✓ |  |  |  |
@@ -134,6 +139,7 @@
 | perl | ✓ | ✓ | ✓ | `perlnavigator` |
 | php | ✓ | ✓ | ✓ | `intelephense` |
 | php-only | ✓ |  |  |  |
+| pkgbuild | ✓ | ✓ | ✓ | `pkgbuild-language-server`, `bash-language-server` |
 | pkl | ✓ |  | ✓ |  |
 | po | ✓ | ✓ |  |  |
 | pod | ✓ |  |  |  |
@@ -182,7 +188,7 @@
 | templ | ✓ |  |  | `templ` |
 | tfvars | ✓ |  | ✓ | `terraform-ls` |
 | todotxt | ✓ |  |  |  |
-| toml | ✓ |  |  | `taplo` |
+| toml | ✓ | ✓ |  | `taplo` |
 | tsq | ✓ |  |  |  |
 | tsx | ✓ | ✓ | ✓ | `typescript-language-server` |
 | twig | ✓ |  |  |  |

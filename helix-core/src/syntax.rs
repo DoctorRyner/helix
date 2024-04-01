@@ -1500,19 +1500,9 @@ impl Syntax {
     }
 
     pub fn walk(&self) -> TreeCursor<'_> {
-        let mut injection_ranges = HashMap::with_capacity(self.layers.len());
-
-        for (layer_id, layer) in &self.layers {
-            // Skip the root layer
-            if layer.parent.is_none() {
-                continue;
-            }
-            for range in layer.ranges.iter() {
-                injection_ranges.insert(range.start_byte..range.end_byte, layer_id);
-            }
-        }
-
-        TreeCursor::new(&self.layers, self.root, injection_ranges)
+        // data structure to find the smallest range that contains a point
+        // when some of the ranges in the structure can overlap.
+        TreeCursor::new(&self.layers, self.root)
     }
 
     // Commenting
