@@ -36,7 +36,7 @@ space = "→"
 nbsp = "⍽"
 tab = "→"
 newline = "⏎"
-tabpad = "→" # Tabs will look like "→···" (depending on tab width)
+tabpad = "→"  # Tabs will look like "→···" (depending on tab width)
 
 [editor.file-picker]
 hidden = false
@@ -57,7 +57,14 @@ p = ":clipboard-paste-before"
 "A-left" = "goto_line_start"
 "A-right" = "goto_line_end"
 "A-f" = "goto_line_end"
-"A-b" = ["goto_line_start", "move_next_word_end", "move_prev_word_start", "move_char_right", "move_char_left", "collapse_selection"]
+"A-b" = [
+  "goto_line_start",
+  "move_next_word_end",
+  "move_prev_word_start",
+  "move_char_right",
+  "move_char_left",
+  "collapse_selection",
+]
 # "A-f" = ["move_next_word_end", "move_char_right" , "collapse_selection"]
 # "A-b" = ["move_prev_word_start", "collapse_selection"]
 "A-up" = ["expand_selection"]
@@ -65,7 +72,12 @@ p = ":clipboard-paste-before"
 w = ["move_prev_word_start", "collapse_selection"]
 f = ["move_next_word_start", "collapse_selection"]
 b = ["move_prev_word_start", "collapse_selection"]
-"minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
+"minus" = [
+  "goto_line_start",
+  "move_next_word_start",
+  "move_char_right",
+  "collapse_selection",
+]
 "=" = "goto_line_end"
 "0" = "goto_line_start"
 "C-n" = ["move_char_left", "collapse_selection"]
@@ -78,7 +90,8 @@ b = ["move_prev_word_start", "collapse_selection"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = ["half_page_up"]
 "S-down" = ["half_page_down"]
-t = ["insert_mode", "insert_newline"]
+# t = ["insert_mode", "insert_newline"]
+t = "goto_word"
 l = "jump_backward"
 "S-l" = "jump_forward"
 "S-left" = "jump_view_left"
@@ -90,7 +103,12 @@ l = "jump_backward"
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
-"ret" = ["insert_newline", "move_line_up", "insert_at_line_end", "move_line_down"]
+"ret" = [
+  "insert_newline",
+  "move_line_up",
+  "insert_at_line_end",
+  "move_line_down",
+]
 "A-i" = "insert_at_line_end"
 "§" = "completion"
 "A-{" = ":buffer-previous"
@@ -108,7 +126,12 @@ l = "jump_backward"
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = ["half_page_up"]
 "S-down" = ["half_page_down"]
-"A-minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
+"A-minus" = [
+  "goto_line_start",
+  "move_next_word_start",
+  "move_char_right",
+  "collapse_selection",
+]
 "A-=" = "goto_line_end"
 "A-0" = "goto_line_start"
 
@@ -138,4 +161,3 @@ f = "extend_next_word_start"
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = "half_page_up"
 "S-down" = ["half_page_down"]
-
