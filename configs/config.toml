@@ -42,7 +42,7 @@ tabpad = "→" # Tabs will look like "→···" (depending on tab width)
 hidden = false
 
 [keys.normal]
-"ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
+# "ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
 a = ["insert_mode", "move_char_right", "collapse_selection"]
 "$" = "goto_line_end"
 # "A-/" = "toggle_comments"
@@ -89,6 +89,9 @@ l = "jump_backward"
 "S-h" = "hsplit"
 
 [keys.insert]
+"S-ret" = ["open_above", "move_line_down"]
+"ret" = ["insert_newline", "move_line_up", "insert_at_line_end", "move_line_down"]
+"A-i" = "insert_at_line_end"
 "§" = "completion"
 "A-{" = ":buffer-previous"
 "A-}" = ":buffer-next"
