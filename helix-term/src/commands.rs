@@ -4,7 +4,10 @@ pub(crate) mod typed;
 
 pub use dap::*;
 use helix_event::status;
-use helix_stdx::rope::{self, RopeSliceExt};
+use helix_stdx::{
+    path::expand_tilde,
+    rope::{self, RopeSliceExt},
+};
 use helix_vcs::{FileChange, Hunk};
 pub use lsp::*;
 use tui::{
@@ -35,7 +38,7 @@ use helix_core::{
     textobject,
     unicode::width::UnicodeWidthChar,
     visual_offset_from_block, Deletion, LineEnding, Position, Range, Rope, RopeGraphemes,
-    RopeReader, RopeSlice, Selection, SmallVec, Tendril, Transaction,
+    RopeReader, RopeSlice, Selection, SmallVec, Syntax, Tendril, Transaction,
 };
 use helix_view::{
     document::{FormatterError, Mode, SCRATCH_BUFFER_NAME},
@@ -436,8 +439,10 @@ impl MappableCommand {
         reverse_selection_contents, "Reverse selections contents",
         expand_selection, "Expand selection to parent syntax node",
         shrink_selection, "Shrink selection to previously expanded syntax node",
-        select_next_sibling, "Select next sibling in syntax tree",
-        select_prev_sibling, "Select previous sibling in syntax tree",
+        select_next_sibling, "Select next sibling in the syntax tree",
+        select_prev_sibling, "Select previous sibling the in syntax tree",
+        select_all_siblings, "Select all siblings of the current node",
+        select_all_children, "Select all children of the current node",
         jump_forward, "Jump forward on jumplist",
         jump_backward, "Jump backward on jumplist",
         save_selection, "Save current selection to jumplist",
@@ -797,28 +802,29 @@ fn goto_line_start(cx: &mut Context) {
 }
 
 fn goto_next_buffer(cx: &mut Context) {
-    goto_buffer(cx.editor, Direction::Forward);
+    goto_buffer(cx.editor, Direction::Forward, cx.count());
 }
 
 fn goto_previous_buffer(cx: &mut Context) {
-    goto_buffer(cx.editor, Direction::Backward);
+    goto_buffer(cx.editor, Direction::Backward, cx.count());
 }
 
-fn goto_buffer(editor: &mut Editor, direction: Direction) {
+fn goto_buffer(editor: &mut Editor, direction: Direction, count: usize) {
     let current = view!(editor).doc;
 
     let id = match direction {
         Direction::Forward => {
             let iter = editor.documents.keys();
-            let mut iter = iter.skip_while(|id| *id != &current);
-            iter.next(); // skip current item
-            iter.next().or_else(|| editor.documents.keys().next())
+            // skip 'count' times past current buffer
+            iter.cycle().skip_while(|id| *id != &current).nth(count)
         }
         Direction::Backward => {
             let iter = editor.documents.keys();
-            let mut iter = iter.rev().skip_while(|id| *id != &current);
-            iter.next(); // skip current item
-            iter.next().or_else(|| editor.documents.keys().next_back())
+            // skip 'count' times past current buffer
+            iter.rev()
+                .cycle()
+                .skip_while(|id| *id != &current)
+                .nth(count)
         }
     }
     .unwrap();
@@ -1199,25 +1205,51 @@ fn goto_file_impl(cx: &mut Context, action: Action) {
     let primary = selections.primary();
     // Checks whether there is only one selection with a width of 1
     if selections.len() == 1 && primary.len() == 1 {
-        let count = cx.count();
-        let text_slice = text.slice(..);
-        // In this case it selects the WORD under the cursor
-        let current_word = textobject::textobject_word(
-            text_slice,
-            primary,
-            textobject::TextObject::Inside,
-            count,
-            true,
-        );
-        // Trims some surrounding chars so that the actual file is opened.
-        let surrounding_chars: &[_] = &['\'', '"', '(', ')'];
         paths.clear();
-        paths.push(
-            current_word
-                .fragment(text_slice)
-                .trim_matches(surrounding_chars)
-                .to_string(),
-        );
+
+        let is_valid_path_char = |c: &char| {
+            #[cfg(target_os = "windows")]
+            let valid_chars = &[
+                '@', '/', '\\', '.', '-', '_', '+', '#', '$', '%', '{', '}', '[', ']', ':', '!',
+                '~', '=',
+            ];
+            #[cfg(not(target_os = "windows"))]
+            let valid_chars = &['@', '/', '.', '-', '_', '+', '#', '$', '%', '~', '=', ':'];
+
+            valid_chars.contains(c) || c.is_alphabetic() || c.is_numeric()
+        };
+
+        let cursor_pos = primary.cursor(text.slice(..));
+        let pre_cursor_pos = cursor_pos.saturating_sub(1);
+        let post_cursor_pos = cursor_pos + 1;
+        let start_pos = if is_valid_path_char(&text.char(cursor_pos)) {
+            cursor_pos
+        } else if is_valid_path_char(&text.char(pre_cursor_pos)) {
+            pre_cursor_pos
+        } else {
+            post_cursor_pos
+        };
+
+        let prefix_len = text
+            .chars_at(start_pos)
+            .reversed()
+            .take_while(is_valid_path_char)
+            .count();
+
+        let postfix_len = text
+            .chars_at(start_pos)
+            .take_while(is_valid_path_char)
+            .count();
+
+        let path: Cow<str> = text
+            .slice((start_pos - prefix_len)..(start_pos + postfix_len))
+            .into();
+        log::debug!("Goto file path: {}", path);
+
+        match expand_tilde(PathBuf::from(path.as_ref())).to_str() {
+            Some(path) => paths.push(path.to_string()),
+            None => cx.editor.set_error("Couldn't get string out of path."),
+        };
     }
 
     for sel in paths {
@@ -2620,14 +2652,19 @@ fn selection_is_linewise(selection: &Selection, text: &Rope) -> bool {
     })
 }
 
-fn delete_selection_impl(cx: &mut Context, op: Operation) {
+enum YankAction {
+    Yank,
+    NoYank,
+}
+
+fn delete_selection_impl(cx: &mut Context, op: Operation, yank: YankAction) {
     let (view, doc) = current!(cx.editor);
 
     let selection = doc.selection(view.id);
     let only_whole_lines = selection_is_linewise(selection, doc.text());
 
-    if cx.register != Some('_') {
-        // first yank the selection
+    if cx.register != Some('_') && matches!(yank, YankAction::Yank) {
+        // yank the selection
         let text = doc.text().slice(..);
         let values: Vec<String> = selection.fragments(text).map(Cow::into_owned).collect();
         let reg_name = cx.register.unwrap_or('"');
@@ -2635,9 +2672,9 @@ fn delete_selection_impl(cx: &mut Context, op: Operation) {
             cx.editor.set_error(err.to_string());
             return;
         }
-    };
+    }
 
-    // then delete
+    // delete the selection
     let transaction =
         Transaction::delete_by_selection(doc.text(), selection, |range| (range.from(), range.to()));
     doc.apply(&transaction, view.id);
@@ -2703,21 +2740,19 @@ fn delete_by_selection_insert_mode(
 }
 
 fn delete_selection(cx: &mut Context) {
-    delete_selection_impl(cx, Operation::Delete);
+    delete_selection_impl(cx, Operation::Delete, YankAction::Yank);
 }
 
 fn delete_selection_noyank(cx: &mut Context) {
-    cx.register = Some('_');
-    delete_selection_impl(cx, Operation::Delete);
+    delete_selection_impl(cx, Operation::Delete, YankAction::NoYank);
 }
 
 fn change_selection(cx: &mut Context) {
-    delete_selection_impl(cx, Operation::Change);
+    delete_selection_impl(cx, Operation::Change, YankAction::Yank);
 }
 
 fn change_selection_noyank(cx: &mut Context) {
-    cx.register = Some('_');
-    delete_selection_impl(cx, Operation::Change);
+    delete_selection_impl(cx, Operation::Change, YankAction::NoYank);
 }
 
 fn collapse_selection(cx: &mut Context) {
@@ -3063,6 +3098,7 @@ fn jumplist_picker(cx: &mut Context) {
             .flat_map(|(view, _)| {
                 view.jumps
                     .iter()
+                    .rev()
                     .map(|(doc_id, selection)| new_meta(view, *doc_id, selection.clone()))
             })
             .collect(),
@@ -5024,6 +5060,36 @@ pub fn extend_parent_node_start(cx: &mut Context) {
     move_node_bound_impl(cx, Direction::Backward, Movement::Extend)
 }
 
+fn select_all_impl<F>(editor: &mut Editor, select_fn: F)
+where
+    F: Fn(&Syntax, RopeSlice, Selection) -> Selection,
+{
+    let (view, doc) = current!(editor);
+
+    if let Some(syntax) = doc.syntax() {
+        let text = doc.text().slice(..);
+        let current_selection = doc.selection(view.id);
+        let selection = select_fn(syntax, text, current_selection.clone());
+        doc.set_selection(view.id, selection);
+    }
+}
+
+fn select_all_siblings(cx: &mut Context) {
+    let motion = |editor: &mut Editor| {
+        select_all_impl(editor, object::select_all_siblings);
+    };
+
+    cx.editor.apply_motion(motion);
+}
+
+fn select_all_children(cx: &mut Context) {
+    let motion = |editor: &mut Editor| {
+        select_all_impl(editor, object::select_all_children);
+    };
+
+    cx.editor.apply_motion(motion);
+}
+
 fn match_brackets(cx: &mut Context) {
     let (view, doc) = current!(cx.editor);
     let is_select = cx.editor.mode == Mode::Select;
@@ -5453,6 +5519,7 @@ fn select_textobject(cx: &mut Context, objtype: textobject::TextObject) {
         ("T", "Test (tree-sitter)"),
         ("e", "Data structure entry (tree-sitter)"),
         ("m", "Closest surrounding pair"),
+        ("g", "Change"),
         (" ", "... or any character acting as a pair"),
     ];
 
@@ -6055,7 +6122,10 @@ fn jump_to_label(cx: &mut Context, labels: Vec<Range>, behaviour: Movement) {
     let doc = doc.id();
     cx.on_next_key(move |cx, event| {
         let alphabet = &cx.editor.config().jump_label_alphabet;
-        let Some(i ) = event.char().and_then(|ch| alphabet.iter().position(|&it| it == ch)) else {
+        let Some(i) = event
+            .char()
+            .and_then(|ch| alphabet.iter().position(|&it| it == ch))
+        else {
             doc_mut!(cx.editor, &doc).remove_jump_labels(view);
             return;
         };
@@ -6068,7 +6138,10 @@ fn jump_to_label(cx: &mut Context, labels: Vec<Range>, behaviour: Movement) {
         cx.on_next_key(move |cx, event| {
             doc_mut!(cx.editor, &doc).remove_jump_labels(view);
             let alphabet = &cx.editor.config().jump_label_alphabet;
-            let Some(inner ) = event.char().and_then(|ch| alphabet.iter().position(|&it| it == ch)) else {
+            let Some(inner) = event
+                .char()
+                .and_then(|ch| alphabet.iter().position(|&it| it == ch))
+            else {
                 return;
             };
             if let Some(mut range) = labels.get(outer + inner).copied() {
@@ -6088,8 +6161,8 @@ fn jump_to_label(cx: &mut Context, labels: Vec<Range>, behaviour: Movement) {
                             to
                         }
                     };
-                     Range::new(anchor, range.head)
-                }else{
+                    Range::new(anchor, range.head)
+                } else {
                     range.with_direction(Direction::Forward)
                 };
                 doc_mut!(cx.editor, &doc).set_selection(view, range.into());

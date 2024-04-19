@@ -24,6 +24,8 @@
 
 > 💡 Mappings marked (**TS**) require a tree-sitter grammar for the file type.
 
+> ⚠️ Some terminals' default key mappings conflict with Helix's. If any of the mappings described on this page do not work as expected, check your terminal's mappings to ensure they do not conflict. See the (wiki)[https://github.com/helix-editor/helix/wiki/Terminal-Support] for known conflicts.
+
 ## Normal mode
 
 Normal mode is the default mode when you launch helix. You can return to it from other modes by pressing the `Escape` key.
@@ -280,7 +282,8 @@ This layer is a kludge of mappings, mostly pickers.
 | `F`     | Open file picker at current working directory                           | `file_picker_in_current_directory`         |
 | `b`     | Open buffer picker                                                      | `buffer_picker`                            |
 | `j`     | Open jumplist picker                                                    | `jumplist_picker`                          |
-| `g`     | Debug (experimental)                                                    | N/A                                        |
+| `g`     | Open changed file picker                                                | `changed_file_picker`                      |
+| `G`     | Debug (experimental)                                                    | N/A                                        |
 | `k`     | Show documentation for item under cursor in a [popup](#popup) (**LSP**) | `hover`                                    |
 | `s`     | Open document symbol picker (**LSP**)                                   | `symbol_picker`                            |
 | `S`     | Open workspace symbol picker (**LSP**)                                  | `workspace_symbol_picker`                  |

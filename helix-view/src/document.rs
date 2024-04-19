@@ -901,15 +901,18 @@ impl Document {
                     }
                 }
             }
+            let write_path = tokio::fs::read_link(&path)
+                .await
+                .unwrap_or_else(|_| path.clone());
 
-            if readonly(&path) {
+            if readonly(&write_path) {
                 bail!(std::io::Error::new(
                     std::io::ErrorKind::PermissionDenied,
                     "Path is read only"
                 ));
             }
             let backup = if path.exists() {
-                let path_ = path.clone();
+                let path_ = write_path.clone();
                 // hacks: we use tempfile to handle the complex task of creating
                 // non clobbered temporary path for us we don't want
                 // the whole automatically delete path on drop thing
@@ -933,7 +936,7 @@ impl Document {
             };
 
             let write_result: anyhow::Result<_> = async {
-                let mut dst = tokio::fs::File::create(&path).await?;
+                let mut dst = tokio::fs::File::create(&write_path).await?;
                 to_writer(&mut dst, encoding_with_bom_info, &text).await?;
                 Ok(())
             }
@@ -942,14 +945,13 @@ impl Document {
             if let Some(backup) = backup {
                 if write_result.is_err() {
                     // restore backup
-                    let _ = tokio::fs::rename(&backup, &path)
+                    let _ = tokio::fs::rename(&backup, &write_path)
                         .await
                         .map_err(|e| log::error!("Failed to restore backup on write failure: {e}"));
                 } else {
                     // copy metadata and delete backup
-                    let path_ = path.clone();
                     let _ = tokio::task::spawn_blocking(move || {
-                        let _ = copy_metadata(&backup, &path_)
+                        let _ = copy_metadata(&backup, &write_path)
                             .map_err(|e| log::error!("Failed to copy metadata on write: {e}"));
                         let _ = std::fs::remove_file(backup)
                             .map_err(|e| log::error!("Failed to remove backup file on write: {e}"));
@@ -969,13 +971,14 @@ impl Document {
 
             for (_, language_server) in language_servers {
                 if !language_server.is_initialized() {
-                    return Ok(event);
+                    continue;
                 }
-                if let Some(identifier) = &identifier {
-                    if let Some(notification) =
-                        language_server.text_document_did_save(identifier.clone(), &text)
-                    {
-                        notification.await?;
+                if let Some(notification) = identifier
+                    .clone()
+                    .and_then(|id| language_server.text_document_did_save(id, &text))
+                {
+                    if let Err(err) = notification.await {
+                        log::error!("Failed to send textDocument/didSave: {err}");
                     }
                 }
             }

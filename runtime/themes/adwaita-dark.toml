@@ -67,7 +67,7 @@
 "ui.selection" = { bg = "scale.blue.8" }
 "ui.selection.primary" = { bg = "#2f426b" }
 "ui.cursor.match" = { fg = "attention.fg", modifiers = [
-    "bold",
+  "bold",
 ], underline = { style = "line" } }
 "ui.cursor" = { modifiers = ["reversed"] }
 "ui.cursorline.primary" = { bg = "#13171D" }
@@ -76,9 +76,7 @@
 "ui.menu.selected" = { bg = "scale.gray.4" }
 "ui.menu.scroll" = { fg = "scale.gray.5", bg = "canvas.overlay" }
 "ui.linenr" = "dark_2"
-"ui.linenr.selected" = { fg = "light_7", bg = "#13171D", modifiers = [
-  "bold",
-] }
+"ui.linenr.selected" = { fg = "light_7", bg = "#13171D", modifiers = ["bold"] }
 "ui.statusline" = { fg = "light_4", bg = "canvas.subtle" }
 "ui.statusline.inactive" = { fg = "light_4", bg = "libadwaita_dark_alt" }
 "ui.statusline.insert" = { fg = "light_4", bg = "teal_4" }
@@ -86,13 +84,9 @@
 "ui.popup" = { bg = "libadwaita_popup" }
 "ui.window" = "split_and_borders"
 "ui.help" = { bg = "libadwaita_dark_alt" }
-"ui.text" = { fg = "fg.muted" }
-"ui.text.focus" = { fg = "fg.default" }
-"ui.text.inactive" = "fg.subtle"
-"ui.virtual" = { fg = "scale.gray.6" }
-# "ui.menu" = { fg = "light_4", bg = "libadwaita_popup" }
-# "ui.menu.selected" = { fg = "light_4", bg = "blue_5" }
-# "ui.menu.scroll" = { fg = "light_7", bg = "dark_3" }
+"ui.text" = "light_4"
+"ui.virtual" = "dark_1"
+"ui.virtual.ruler" = { bg = "libadwaita_popup" }
 
 "warning" = "yellow_2"
 "error" = "red_4"
@@ -321,4 +315,3 @@ split_and_borders = "#4F4F4F"
 "success.fg" = "#3fb950"
 "success.muted" = "#2ea04366"
 "success.subtle" = "#2ea04326"
-
