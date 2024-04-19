@@ -44,6 +44,7 @@ hidden = false
 [keys.normal]
 # "ret" = ["move_line_down", "goto_first_nonwhitespace"] # Maps the enter key to move to start of next line
 a = ["insert_mode", "move_char_right", "collapse_selection"]
+Y = ":yank-diagnostic"
 "$" = "goto_line_end"
 # "A-/" = "toggle_comments"
 G = "goto_file_end"
@@ -127,6 +128,7 @@ l = ":lsp-restart"
 [keys.select]
 t = "extend_to_word"
 y = [":clipboard-yank", "normal_mode"]
+Y = ":yank-diagnostic"
 "0" = "goto_line_start"
 "$" = "goto_line_end"
 G = "goto_file_end"
