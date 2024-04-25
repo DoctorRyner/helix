@@ -89,6 +89,7 @@ l = "jump_backward"
 "?" = "jump_view_down"
 "S-v" = "vsplit"
 "S-h" = "hsplit"
+W = "wclose"
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
