@@ -124,6 +124,7 @@ w = [":format", ":w"]
 x = ["yank_to_clipboard", "delete_selection"]
 l = ":lsp-restart"
 "[" = "surround_delete"
+t = "hover"
 
 [keys.select]
 t = "extend_to_word"
