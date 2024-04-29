@@ -1259,7 +1259,8 @@ fn goto_file_impl(cx: &mut Context, action: Action) {
         }
 
         if let Ok(url) = Url::parse(p) {
-            return open_url(cx, url, action);
+            open_url(cx, url, action);
+            continue;
         }
 
         let path = &rel_path.join(p);
