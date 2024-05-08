@@ -129,6 +129,7 @@ l = ":lsp-restart"
 t = "hover"
 
 [keys.select]
+q = ":clipboard-yank"
 t = "extend_to_word"
 y = [":clipboard-yank", "normal_mode"]
 Y = ":yank-diagnostic"

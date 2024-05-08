@@ -1,11 +1,11 @@
-use helix_core::{Transaction, Rope};
+use helix_core::{Rope, Transaction};
 
 use crate::{
     compositor::{Callback, Component, Context, Event, EventResult},
     ctrl, key,
 };
 
-pub struct CopilotCompletionPicker{
+pub struct CopilotCompletionPicker {
     original: Rope,
     cur: usize,
     transactions: Vec<Transaction>,
@@ -14,9 +14,7 @@ pub struct CopilotCompletionPicker{
 
 impl CopilotCompletionPicker {
     // need to return the state
-    pub fn new(original: Rope, transactions: Vec<Transaction>) 
-        -> Option<(Self, Transaction)> 
-    {
+    pub fn new(original: Rope, transactions: Vec<Transaction>) -> Option<(Self, Transaction)> {
         if transactions.is_empty() {
             return None;
         }
@@ -39,26 +37,31 @@ impl CopilotCompletionPicker {
         }
         self.cur += 1;
         Some((
-            self.transactions[self.cur-1].clone(),
-            self.transactions[self.cur].clone()
+            self.transactions[self.cur - 1].clone(),
+            self.transactions[self.cur].clone(),
         ))
     }
 
-    fn prev(&mut self) -> Option<(Transaction, Transaction)>{
+    fn prev(&mut self) -> Option<(Transaction, Transaction)> {
         if self.cur == 0 {
             return None;
         }
         self.cur -= 1;
         Some((
             self.transactions[self.cur + 1].clone(),
-            self.transactions[self.cur].clone()
+            self.transactions[self.cur].clone(),
         ))
     }
 }
 
 impl Component for CopilotCompletionPicker {
-    fn render(&mut self, _: helix_view::graphics::Rect, _: &mut tui::buffer::Buffer, _: &mut Context) {
-       () 
+    fn render(
+        &mut self,
+        _: helix_view::graphics::Rect,
+        _: &mut tui::buffer::Buffer,
+        _: &mut Context,
+    ) {
+        ()
     }
 
     fn id(&self) -> Option<&'static str> {
@@ -71,9 +74,10 @@ impl Component for CopilotCompletionPicker {
             _ => return EventResult::Ignored(None),
         };
 
-        fn update_picker(transactions: Option<(Transaction, Transaction)>, original: &Rope) 
-        -> EventResult 
-        {
+        fn update_picker(
+            transactions: Option<(Transaction, Transaction)>,
+            original: &Rope,
+        ) -> EventResult {
             match transactions {
                 None => EventResult::Consumed(None),
                 Some((prev, next)) => {
@@ -97,16 +101,16 @@ impl Component for CopilotCompletionPicker {
             ctrl!('n') => update_picker(self.next(), &self.original),
             ctrl!('m') => update_picker(self.prev(), &self.original),
             key!(Enter) => {
-                let id = self.id.clone();
+                let id = self.id;
                 let remove_picker: Callback = Box::new(move |compositor, _| {
                     compositor.remove(id);
                 });
 
                 EventResult::Consumed(Some(remove_picker))
-            },
+            }
             key!(Esc) => {
                 let cur = self.transactions[self.cur].clone();
-                let id = self.id.clone();
+                let id = self.id;
                 let original = self.original.clone();
 
                 let undo_remove_picker: Callback = Box::new(move |compositor, context| {
@@ -119,7 +123,7 @@ impl Component for CopilotCompletionPicker {
                 });
 
                 EventResult::Consumed(Some(undo_remove_picker))
-            },
+            }
 
             _ => EventResult::Consumed(None),
         }
