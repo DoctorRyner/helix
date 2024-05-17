@@ -54,12 +54,12 @@ fuzzy-matcher = "0.3"
 nucleo.workspace = true
 ignore = "0.4"
 # markdown doc rendering
-pulldown-cmark = { version = "0.10", default-features = false }
+pulldown-cmark = { version = "0.11", default-features = false }
 # file type detection
 content_inspector = "0.2.4"
 
 # opening URLs
-open = "5.1.2"
+open = "5.1.3"
 url = "2.5.0"
 
 # config
