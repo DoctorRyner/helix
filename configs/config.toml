@@ -12,11 +12,15 @@ select = "underline"
 [editor]
 bufferline = "multiple"
 true-color = true
-auto-save = true
 undercurl = true
 idle-timeout = 0
 cursorline = true
 completion-trigger-len = 1
+
+[editor.auto-save]
+focus-lost = true
+after-delay.enable = true
+after-delay.timeout = 500
 
 [editor.soft-wrap]
 enable = true
@@ -127,6 +131,7 @@ x = ["yank_to_clipboard", "delete_selection"]
 l = ":lsp-restart"
 "[" = "surround_delete"
 t = "hover"
+H = ":config-reload"
 
 [keys.select]
 q = ":clipboard-yank"

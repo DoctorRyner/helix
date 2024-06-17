@@ -17,7 +17,7 @@ type = { fg = "#A6D279", modifiers = ["bold"] }
 constructor = "#f19b99"
 function = "#6295E3"
 "function.macro" = "lilac"
-"function.builtin" = "white"
+"function.builtin" = "#f1c67a"
 tag = "#f19b99"
 comment = "#808080"
 constant = "#7f89c3"
@@ -38,7 +38,7 @@ label = "honey"
 
 "diff.plus" = "#35bf86"
 "diff.minus" = "#f22c86"
-"diff.delta" = "#6f44f0"
+"diff.delta" = "#8360EE"
 
 # TODO: diferentiate doc comment
 # concat (ERROR) @error.syntax and "MISSING ;" selectors for errors
