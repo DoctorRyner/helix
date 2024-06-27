@@ -34,7 +34,7 @@ pub use tree::{TreeOp, TreeView, TreeViewItem};
 
 use helix_view::Editor;
 
-use std::path::PathBuf;
+use std::{error::Error, path::PathBuf};
 
 pub fn prompt(
     cx: &mut crate::commands::Context,
