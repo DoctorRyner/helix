@@ -1942,6 +1942,8 @@ fn select_regex(cx: &mut Context) {
                 selection::select_on_matches(text, doc.selection(view.id), &regex)
             {
                 doc.set_selection(view.id, selection);
+            } else {
+                cx.editor.set_error("nothing selected");
             }
         },
     );
@@ -4707,6 +4709,8 @@ fn keep_or_remove_selections_impl(cx: &mut Context, remove: bool) {
                 selection::keep_or_remove_matches(text, doc.selection(view.id), &regex, remove)
             {
                 doc.set_selection(view.id, selection);
+            } else {
+                cx.editor.set_error("no selections remaining");
             }
         },
     )
@@ -5799,27 +5803,24 @@ async fn shell_impl_async(
         process.wait_with_output().await?
     };
 
-    if !output.status.success() {
-        if !output.stderr.is_empty() {
-            let err = String::from_utf8_lossy(&output.stderr).to_string();
-            log::error!("Shell error: {}", err);
-            bail!("Shell error: {}", err);
+    let output = if !output.status.success() {
+        if output.stderr.is_empty() {
+            match output.status.code() {
+                Some(exit_code) => bail!("Shell command failed: status {}", exit_code),
+                None => bail!("Shell command failed"),
+            }
         }
-        match output.status.code() {
-            Some(exit_code) => bail!("Shell command failed: status {}", exit_code),
-            None => bail!("Shell command failed"),
-        }
+        String::from_utf8_lossy(&output.stderr)
+        // Prioritize `stderr` output over `stdout`
     } else if !output.stderr.is_empty() {
-        log::debug!(
-            "Command printed to stderr: {}",
-            String::from_utf8_lossy(&output.stderr).to_string()
-        );
-    }
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        log::debug!("Command printed to stderr: {stderr}");
+        stderr
+    } else {
+        String::from_utf8_lossy(&output.stdout)
+    };
 
-    let str = std::str::from_utf8(&output.stdout)
-        .map_err(|_| anyhow!("Process did not output valid UTF-8"))?;
-    let tendril = Tendril::from(str);
-    Ok(tendril)
+    Ok(Tendril::from(output))
 }
 
 fn shell(cx: &mut compositor::Context, cmd: &str, behavior: &ShellBehavior) {
