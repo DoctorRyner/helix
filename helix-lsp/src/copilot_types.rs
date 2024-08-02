@@ -1,5 +1,5 @@
-use lsp_types::{Position, request::Request, Range};
-use serde::{Serialize, Deserialize};
+use crate::lsp::{request::Request, Position, Range};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub enum CompletionRequest {}
