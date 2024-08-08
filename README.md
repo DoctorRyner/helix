@@ -1,3 +1,10 @@
+Additional features of this fork:
+1. File explorer: space + e
+2. Copilot: ctrl + n from this Add support for copilot helix-editor/helix#6865
+3. alexandria theme I made
+4. Ready config files
+5. Maybe something else, I don't remember ^-^
+
 <div align="center">
 
 <h1>

@@ -152,3 +152,21 @@ f = "extend_next_word_start"
 "S-up" = "half_page_up"
 "S-down" = ["half_page_down"]
 
+[keys.normal.'space'.'space']
+# Extensions using custom script
+# Interactive search in current working directory
+s = ":pipe-to helix-ext search --current"
+# Interactive search in current working directory (include path name in the search)
+S = ":pipe-to helix-ext search --current-inc-path"
+# Interactive search in current git directory
+w = ":pipe-to helix-ext search --workspace"
+# Interactive search in current git directory (include path name in the search)
+W = ":pipe-to helix-ext search --workspace-inc-path"
+# Interactive search in current buffer
+b = ":pipe-to helix-ext search --buffer"
+# Git status
+m = ":pipe-to helix-ext git --status"
+# Git blame
+B = ":pipe-to helix-ext git --blame"
+# Git browse github repo using default browser
+O = ":pipe-to helix-ext git --browse"
