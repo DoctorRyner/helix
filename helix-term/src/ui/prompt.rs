@@ -630,11 +630,11 @@ impl Component for Prompt {
                     self.change_history(cx, register, CompletionDirection::Backward);
                 }
             }
-            ctrl!('n') | key!(Down) => {
-                if let Some(register) = self.history_register {
-                    self.change_history(cx, register, CompletionDirection::Forward);
-                }
-            }
+            // ctrl!('n') | key!(Down) => {
+            //     if let Some(register) = self.history_register {
+            //         self.change_history(cx, register, CompletionDirection::Forward);
+            //     }
+            // }
             key!(Tab) => {
                 self.change_completion_selection(CompletionDirection::Forward);
                 // if single completion candidate is a directory list content in completion

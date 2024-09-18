@@ -1011,7 +1011,7 @@ impl<I: 'static + Send + Sync, D: 'static + Send + Sync> Component for Picker<I,
             shift!(Tab) | key!(Up) | ctrl!('p') => {
                 self.move_by(1, Direction::Backward);
             }
-            key!(Tab) | key!(Down) | ctrl!('n') => {
+            key!(Tab) | key!(Down) => {
                 self.move_by(1, Direction::Forward);
             }
             key!(PageDown) | ctrl!('d') => {

@@ -98,7 +98,7 @@ impl Component for CopilotCompletionPicker {
         }
 
         match key {
-            ctrl!('n') => update_picker(self.next(), &self.original),
+            ctrl!('g') => update_picker(self.next(), &self.original),
             ctrl!('m') => update_picker(self.prev(), &self.original),
             key!(Enter) => {
                 let id = self.id;

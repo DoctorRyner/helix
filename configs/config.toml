@@ -20,7 +20,7 @@ completion-trigger-len = 1
 [editor.auto-save]
 focus-lost = true
 after-delay.enable = true
-after-delay.timeout = 500
+after-delay.timeout = 300
 
 [editor.soft-wrap]
 enable = true
