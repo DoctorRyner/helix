@@ -488,7 +488,7 @@ impl View {
         }) = doc.color_swatches.get(&self.id)
         {
             let type_style = theme
-                .and_then(|t| t.find_scope_index("ui.virtual.inlay-hint.type"))
+                .and_then(|t| t.find_scope_index("ui.background"))
                 .map(Highlight);
 
             let _style = Style::default().fg(Color::Rgb(4, 12, 28));
