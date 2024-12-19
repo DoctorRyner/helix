@@ -1,10 +1,11 @@
 use crate::{
     align_view,
     annotations::diagnostics::InlineDiagnostics,
-    document::DocumentInlayHints,
+    document::{DocumentColorSwatches, DocumentInlayHints},
     editor::{GutterConfig, GutterType},
     graphics::Rect,
     handlers::diagnostics::DiagnosticsHandler,
+    theme::{Color, Style},
     Align, Document, DocumentId, Theme, ViewId,
 };
 
@@ -480,6 +481,22 @@ impl View {
                 .add_inline_annotations(parameter_inlay_hints, parameter_style)
                 .add_inline_annotations(other_inlay_hints, other_style)
                 .add_inline_annotations(padding_after_inlay_hints, None);
+        };
+        if let Some(DocumentColorSwatches {
+            id: _,
+            color_swatches,
+        }) = doc.color_swatches.get(&self.id)
+        {
+            let type_style = theme
+                .and_then(|t| t.find_scope_index("ui.virtual.inlay-hint.type"))
+                .map(Highlight);
+
+            let _style = Style::default().fg(Color::Rgb(4, 12, 28));
+
+            // Overlapping annotations are ignored apart from the first so the order here is not random:
+            // types -> parameters -> others should hopefully be the "correct" order for most use cases,
+            // with the padding coming before and after as expected.
+            text_annotations.add_inline_annotations(color_swatches, type_style);
         };
         let config = doc.config.load();
         let width = self.inner_width(doc);
