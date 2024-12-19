@@ -493,9 +493,6 @@ impl View {
 
             let _style = Style::default().fg(Color::Rgb(4, 12, 28));
 
-            // Overlapping annotations are ignored apart from the first so the order here is not random:
-            // types -> parameters -> others should hopefully be the "correct" order for most use cases,
-            // with the padding coming before and after as expected.
             text_annotations.add_inline_annotations(color_swatches, type_style);
         };
         let config = doc.config.load();
