@@ -1277,6 +1277,24 @@ pub fn compute_color_swatches_for_all_views(editor: &mut Editor, jobs: &mut crat
     }
 }
 
+fn compute_lines(view: &View, doc: &Document) -> (usize, usize) {
+    // Compute ~3 times the current view height of color swatches, that way some scrolling
+    // will not show half the view with hints and half without while still being faster
+    // than computing all the hints for the full file (which could be dozens of time
+    // longer than the view is).
+    let doc_text = doc.text();
+    let len_lines = doc_text.len_lines();
+
+    let view_height = view.inner_height();
+    let first_visible_line =
+        doc_text.char_to_line(doc.view_offset(view.id).anchor.min(doc_text.len_chars()));
+    let first_line = first_visible_line.saturating_sub(view_height);
+    let last_line = first_visible_line
+        .saturating_add(view_height.saturating_mul(2))
+        .min(len_lines);
+    (first_line, last_line)
+}
+
 fn compute_color_swatches_for_view(
     view: &View,
     doc: &Document,
@@ -1288,20 +1306,7 @@ fn compute_color_swatches_for_view(
         .language_servers_with_feature(LanguageServerFeature::ColorProvider)
         .next()?;
 
-    let doc_text = doc.text();
-    let len_lines = doc_text.len_lines();
-
-    // Compute ~3 times the current view height of color swatches, that way some scrolling
-    // will not show half the view with hints and half without while still being faster
-    // than computing all the hints for the full file (which could be dozens of time
-    // longer than the view is).
-    let view_height = view.inner_height();
-    let first_visible_line =
-        doc_text.char_to_line(doc.view_offset(view_id).anchor.min(doc_text.len_chars()));
-    let first_line = first_visible_line.saturating_sub(view_height);
-    let last_line = first_visible_line
-        .saturating_add(view_height.saturating_mul(2))
-        .min(len_lines);
+    let (first_line, last_line) = compute_lines(view, doc);
 
     let new_doc_color_swatches_id = ColorSwatchesId {
         first_line,
@@ -1351,10 +1356,8 @@ fn compute_color_swatches_for_view(
             // avoid errors on our end.
             swatches.sort_by_key(|inlay_hint| inlay_hint.range.start);
 
-            // let mut padding_before_color_swatches = Vec::new();
             let mut color_swatches = Vec::new();
             let mut colors = Vec::new();
-            // let mut padding_after_color_swatches = Vec::new();
 
             let doc_text = doc.text();
 
@@ -1369,9 +1372,7 @@ fn compute_color_swatches_for_view(
                     None => continue,
                 };
 
-                let label = String::from("■ ");
-
-                color_swatches.push(InlineAnnotation::new(char_idx, label));
+                color_swatches.push(InlineAnnotation::new(char_idx, "■"));
                 colors.push(Color::Rgb(
                     (swatch.color.red * 255.) as u8,
                     (swatch.color.green * 255.) as u8,
@@ -1405,20 +1406,7 @@ fn compute_inlay_hints_for_view(
         .language_servers_with_feature(LanguageServerFeature::InlayHints)
         .next()?;
 
-    let doc_text = doc.text();
-    let len_lines = doc_text.len_lines();
-
-    // Compute ~3 times the current view height of inlay hints, that way some scrolling
-    // will not show half the view with hints and half without while still being faster
-    // than computing all the hints for the full file (which could be dozens of time
-    // longer than the view is).
-    let view_height = view.inner_height();
-    let first_visible_line =
-        doc_text.char_to_line(doc.view_offset(view_id).anchor.min(doc_text.len_chars()));
-    let first_line = first_visible_line.saturating_sub(view_height);
-    let last_line = first_visible_line
-        .saturating_add(view_height.saturating_mul(2))
-        .min(len_lines);
+    let (first_line, last_line) = compute_lines(view, doc);
 
     let new_doc_inlay_hints_id = DocumentInlayHintsId {
         first_line,
@@ -1433,6 +1421,7 @@ fn compute_inlay_hints_for_view(
         return None;
     }
 
+    let doc_text = doc.text();
     let doc_slice = doc_text.slice(..);
     let first_char_in_range = doc_slice.line_to_char(first_line);
     let last_char_in_range = doc_slice.line_to_char(last_line);
