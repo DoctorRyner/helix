@@ -1120,9 +1120,7 @@ impl Client {
         text_document: lsp::TextDocumentIdentifier,
         work_done_token: Option<lsp::ProgressToken>,
     ) -> Option<impl Future<Output = Result<Value>>> {
-        let capabilities = self.capabilities.get().unwrap();
-
-        match capabilities.color_provider {
+        match self.capabilities.get().unwrap().color_provider {
             Some(_) => (),
             _ => return None,
         }
