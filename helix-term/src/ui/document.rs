@@ -234,6 +234,7 @@ pub fn render_text(
                 overlay_style: overlay_style_span.0,
             }
         };
+
         decorations.decorate_grapheme(renderer, &grapheme, &mut grapheme_style.syntax_style);
 
         let virt = grapheme.is_virtual();

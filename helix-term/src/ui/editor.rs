@@ -36,6 +36,8 @@ use std::{mem::take, num::NonZeroUsize, path::PathBuf, rc::Rc, sync::Arc};
 
 use tui::{buffer::Buffer as Surface, text::Span};
 
+use super::text_decorations::ColorSwatch;
+
 pub struct EditorView {
     pub keymaps: Keymaps,
     on_next_key: Option<(OnKeyCallback, OnKeyCallbackKind)>,
@@ -202,32 +204,7 @@ impl EditorView {
         ));
         if let Some(swatches) = doc.color_swatches(view.id) {
             for (swatch, color) in swatches.color_swatches.iter().zip(swatches.colors.iter()) {
-                struct SwatchAnnotate {
-                    swatch_idx: usize,
-                    color: Color,
-                }
-                impl Decoration for SwatchAnnotate {
-                    fn decorate_grapheme(
-                        &mut self,
-                        _renderer: &mut TextRenderer,
-                        _grapheme: &FormattedGrapheme,
-                        style: &mut Style,
-                    ) -> usize {
-                        style.fg = Some(self.color);
-                        usize::MAX
-                    }
-                    fn reset_pos(&mut self, pos: usize) -> usize {
-                        if self.swatch_idx >= pos {
-                            self.swatch_idx
-                        } else {
-                            usize::MAX
-                        }
-                    }
-                }
-                decorations.add_decoration(SwatchAnnotate {
-                    color: *color,
-                    swatch_idx: swatch.char_idx,
-                });
+                decorations.add_decoration(ColorSwatch::new(*color, swatch.char_idx));
             }
         }
         render_document(

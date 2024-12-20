@@ -2,7 +2,10 @@ use std::cmp::Ordering;
 
 use helix_core::doc_formatter::FormattedGrapheme;
 use helix_core::Position;
-use helix_view::{editor::CursorCache, theme::Style};
+use helix_view::{
+    editor::CursorCache,
+    theme::{Color, Style},
+};
 
 use crate::ui::document::{LinePos, TextRenderer};
 
@@ -146,6 +149,37 @@ impl<'a> DecorationManager<'a> {
         let mut virt_off = Position::new(1, line_width); // start at 1 so the line is never overwritten
         for (decoration, _) in &mut self.decorations {
             virt_off += decoration.render_virt_lines(renderer, pos, virt_off);
+        }
+    }
+}
+
+pub struct ColorSwatch {
+    color: Color,
+    pos: usize,
+}
+
+impl ColorSwatch {
+    pub fn new(color: Color, pos: usize) -> Self {
+        ColorSwatch { color, pos }
+    }
+}
+
+impl Decoration for ColorSwatch {
+    fn decorate_grapheme(
+        &mut self,
+        _renderer: &mut TextRenderer,
+        _grapheme: &FormattedGrapheme,
+        style: &mut Style,
+    ) -> usize {
+        style.fg = Some(self.color);
+        usize::MAX
+    }
+
+    fn reset_pos(&mut self, pos: usize) -> usize {
+        if self.pos >= pos {
+            self.pos
+        } else {
+            usize::MAX
         }
     }
 }
