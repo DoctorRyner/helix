@@ -484,6 +484,7 @@ impl View {
         };
         if let Some(DocumentColorSwatches {
             id: _,
+            colors: _,
             color_swatches,
         }) = doc.color_swatches.get(&self.id)
         {

@@ -21,7 +21,7 @@ use helix_view::{
     document::{ColorSwatchesId, DocumentColorSwatches, DocumentInlayHints, DocumentInlayHintsId},
     editor::Action,
     handlers::lsp::SignatureHelpInvoked,
-    theme::Style,
+    theme::{Color, Style},
     Document, View,
 };
 
@@ -1353,6 +1353,7 @@ fn compute_color_swatches_for_view(
 
             // let mut padding_before_color_swatches = Vec::new();
             let mut color_swatches = Vec::new();
+            let mut colors = Vec::new();
             // let mut padding_after_color_swatches = Vec::new();
 
             let doc_text = doc.text();
@@ -1371,12 +1372,18 @@ fn compute_color_swatches_for_view(
                 let label = String::from("■ ");
 
                 color_swatches.push(InlineAnnotation::new(char_idx, label));
+                colors.push(Color::Rgb(
+                    (swatch.color.red * 255.) as u8,
+                    (swatch.color.green * 255.) as u8,
+                    (swatch.color.blue * 255.) as u8,
+                ));
             }
 
             doc.set_color_swatches(
                 view_id,
                 DocumentColorSwatches {
                     id: new_doc_color_swatches_id,
+                    colors,
                     color_swatches,
                 },
             );

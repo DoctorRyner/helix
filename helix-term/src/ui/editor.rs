@@ -201,9 +201,10 @@ impl EditorView {
             config.end_of_line_diagnostics,
         ));
         if let Some(swatches) = doc.color_swatches(view.id) {
-            for swatch in swatches.color_swatches.clone() {
+            for (swatch, color) in swatches.color_swatches.iter().zip(swatches.colors.iter()) {
                 struct SwatchAnnotate {
                     swatch_idx: usize,
+                    color: Color,
                 }
                 impl Decoration for SwatchAnnotate {
                     fn decorate_grapheme(
@@ -212,14 +213,19 @@ impl EditorView {
                         _grapheme: &FormattedGrapheme,
                         style: &mut Style,
                     ) -> usize {
-                        style.fg = Some(Color::Rgb(4, 12, 28));
+                        style.fg = Some(self.color);
                         usize::MAX
                     }
-                    fn reset_pos(&mut self, _pos: usize) -> usize {
-                        self.swatch_idx
+                    fn reset_pos(&mut self, pos: usize) -> usize {
+                        if self.swatch_idx >= pos {
+                            self.swatch_idx
+                        } else {
+                            usize::MAX
+                        }
                     }
                 }
                 decorations.add_decoration(SwatchAnnotate {
+                    color: *color,
                     swatch_idx: swatch.char_idx,
                 });
             }

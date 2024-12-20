@@ -39,6 +39,7 @@ use helix_core::{
     ChangeSet, Diagnostic, LineEnding, Range, Rope, RopeBuilder, Selection, Syntax, Transaction,
 };
 
+use crate::theme::Color;
 use crate::{
     editor::Config,
     events::{DocumentDidChange, SelectionDidChange},
@@ -277,6 +278,7 @@ pub struct DocumentColorSwatches {
     pub id: ColorSwatchesId,
 
     pub color_swatches: Vec<InlineAnnotation>,
+    pub colors: Vec<Color>,
 }
 
 impl DocumentColorSwatches {
@@ -285,6 +287,7 @@ impl DocumentColorSwatches {
         Self {
             id,
             color_swatches: Vec::new(),
+            colors: Vec::new(),
         }
     }
 }
@@ -1495,6 +1498,7 @@ impl Document {
         for text_annotation in self.color_swatches.values_mut() {
             let DocumentColorSwatches {
                 id: _,
+                colors: _,
                 color_swatches,
             } = text_annotation;
 
