@@ -1490,8 +1490,8 @@ fn compute_color_swatches_for_view(
             // avoid errors on our end.
             swatches.sort_by_key(|inlay_hint| inlay_hint.range.start);
 
-            let mut color_swatches = Vec::new();
-            let mut colors = Vec::new();
+            let mut color_swatches = Vec::with_capacity(swatches.len());
+            let mut colors = Vec::with_capacity(swatches.len());
 
             let doc_text = doc.text();
 
