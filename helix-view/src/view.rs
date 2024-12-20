@@ -5,7 +5,6 @@ use crate::{
     editor::{GutterConfig, GutterType},
     graphics::Rect,
     handlers::diagnostics::DiagnosticsHandler,
-    theme::{Color, Style},
     Align, Document, DocumentId, Theme, ViewId,
 };
 

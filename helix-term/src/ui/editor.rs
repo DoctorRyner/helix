@@ -15,7 +15,6 @@ use crate::{
 
 use helix_core::{
     diagnostic::NumberOrString,
-    doc_formatter::FormattedGrapheme,
     graphemes::{next_grapheme_boundary, prev_grapheme_boundary},
     movement::Direction,
     syntax::{self, HighlightEvent},
