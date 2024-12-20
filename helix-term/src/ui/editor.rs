@@ -15,6 +15,7 @@ use crate::{
 
 use helix_core::{
     diagnostic::NumberOrString,
+    doc_formatter::FormattedGrapheme,
     graphemes::{next_grapheme_boundary, prev_grapheme_boundary},
     movement::Direction,
     syntax::{self, HighlightEvent},
@@ -199,6 +200,30 @@ impl EditorView {
             inline_diagnostic_config,
             config.end_of_line_diagnostics,
         ));
+        if let Some(swatches) = doc.color_swatches(view.id) {
+            for swatch in swatches.color_swatches.clone() {
+                struct SwatchAnnotate {
+                    swatch_idx: usize,
+                }
+                impl Decoration for SwatchAnnotate {
+                    fn decorate_grapheme(
+                        &mut self,
+                        _renderer: &mut TextRenderer,
+                        _grapheme: &FormattedGrapheme,
+                        style: &mut Style,
+                    ) -> usize {
+                        style.fg = Some(Color::Rgb(4, 12, 28));
+                        usize::MAX
+                    }
+                    fn reset_pos(&mut self, _pos: usize) -> usize {
+                        self.swatch_idx
+                    }
+                }
+                decorations.add_decoration(SwatchAnnotate {
+                    swatch_idx: swatch.char_idx,
+                });
+            }
+        }
         render_document(
             surface,
             inner,
