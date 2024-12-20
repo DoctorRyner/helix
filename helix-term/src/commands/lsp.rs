@@ -1506,7 +1506,7 @@ fn compute_color_swatches_for_view(
                     None => continue,
                 };
 
-                color_swatches.push(InlineAnnotation::new(char_idx, "■"));
+                color_swatches.push(InlineAnnotation::new(char_idx, "■ "));
                 colors.push(Color::Rgb(
                     (swatch.color.red * 255.) as u8,
                     (swatch.color.green * 255.) as u8,
