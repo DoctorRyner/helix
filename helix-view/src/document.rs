@@ -257,41 +257,6 @@ impl DocumentInlayHints {
     }
 }
 
-/// Color swatches for a single `(Document, View)` combo.
-///
-/// There are `*_color_swatches` field for each kind of hints an LSP can send since we offer the
-/// option to style theme differently in the theme according to the (currently supported) kinds
-/// (`type`, `parameter` and the rest).
-///
-/// Color swatches are always `InlineAnnotation`s, not overlays or line-ones: LSP may choose to place
-/// them anywhere in the text and will sometime offer config options to move them where the user
-/// wants them but it shouldn't be Helix who decides that so we use the most precise positioning.
-///
-/// The padding for color swatches needs to be stored separately for before and after (the LSP spec
-/// uses 'left' and 'right' but not all text is left to right so let's be correct) padding because
-/// the 'before' padding must be added to a layer *before* the regular inlay hints and the 'after'
-/// padding comes ... after.
-#[derive(Debug, Clone)]
-pub struct DocumentColorSwatches {
-    /// Identifier for the inlay hints stored in this structure. To be checked to know if they have
-    /// to be recomputed on idle or not.
-    pub id: ColorSwatchesId,
-
-    pub color_swatches: Vec<InlineAnnotation>,
-    pub colors: Vec<Color>,
-}
-
-impl DocumentColorSwatches {
-    /// Generate an empty list of inlay hints with the given ID.
-    pub fn empty_with_id(id: ColorSwatchesId) -> Self {
-        Self {
-            id,
-            color_swatches: Vec::new(),
-            colors: Vec::new(),
-        }
-    }
-}
-
 /// Associated with a [`Document`] and [`ViewId`], uniquely identifies the state of inlay hints for
 /// for that document and view: if this changed since the last save, the inlay hints for the view
 /// should be recomputed.
@@ -306,8 +271,36 @@ pub struct DocumentInlayHintsId {
     pub last_line: usize,
 }
 
-/// Associated with a [`Document`] and [`ViewId`], uniquely identifies the state of inlay hints for
-/// for that document and view: if this changed since the last save, the inlay hints for the view
+/// Color swatches for a single `(Document, View)` combo.
+///
+/// Color swatches are always `InlineAnnotation`s, not overlays or line-ones: LSP may choose to place
+/// them anywhere in the text and will sometime offer config options to move them where the user
+/// wants them but it shouldn't be Helix who decides that so we use the most precise positioning.
+///
+/// To get a tuple of corresponding (Color, Color Swatch) use zip(color_swatches, colors)
+#[derive(Debug, Clone)]
+pub struct DocumentColorSwatches {
+    /// Identifier for the color swatches stored in this structure. To be checked to know if they have
+    /// to be recomputed on idle or not.
+    pub id: ColorSwatchesId,
+
+    pub color_swatches: Vec<InlineAnnotation>,
+    pub colors: Vec<Color>,
+}
+
+impl DocumentColorSwatches {
+    /// Generate an empty list of color swatches with the given ID.
+    pub fn empty_with_id(id: ColorSwatchesId) -> Self {
+        Self {
+            id,
+            color_swatches: Vec::new(),
+            colors: Vec::new(),
+        }
+    }
+}
+
+/// Associated with a [`Document`] and [`ViewId`], uniquely identifies the state of color swatches for
+/// for that document and view: if this changed since the last save, the color swatches for the view
 /// should be recomputed.
 ///
 /// We can't store the `ViewOffset` instead of the first and last asked-for lines because if
@@ -2249,7 +2242,7 @@ impl Document {
         self.inlay_hints.get(&view_id)
     }
 
-    /// Get the inlay hints for this document and `view_id`.
+    /// Get the color swatches for this document and `view_id`.
     pub fn color_swatches(&self, view_id: ViewId) -> Option<&DocumentColorSwatches> {
         self.color_swatches.get(&view_id)
     }

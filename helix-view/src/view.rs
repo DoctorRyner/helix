@@ -492,8 +492,6 @@ impl View {
                 .and_then(|t| t.find_scope_index("ui.background"))
                 .map(Highlight);
 
-            let _style = Style::default().fg(Color::Rgb(4, 12, 28));
-
             text_annotations.add_inline_annotations(color_swatches, type_style);
         };
         let config = doc.config.load();
