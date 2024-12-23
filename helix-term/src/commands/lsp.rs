@@ -1468,9 +1468,8 @@ fn compute_color_swatches_for_view(
             }
 
             // Add annotations to relevant document, not the current one (it may have changed in between)
-            let doc = match editor.documents.get_mut(&doc_id) {
-                Some(doc) => doc,
-                None => return,
+            let Some(doc) = editor.documents.get_mut(&doc_id) else {
+                return;
             };
 
             // If we have neither color swatches nor an LSP, empty the color swatches since they're now oudated
