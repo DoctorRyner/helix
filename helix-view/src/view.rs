@@ -485,13 +485,12 @@ impl View {
             id: _,
             colors: _,
             color_swatches,
+            color_swatches_padding,
         }) = doc.color_swatches.get(&self.id)
         {
-            let type_style = theme
-                .and_then(|t| t.find_scope_index("ui.background"))
-                .map(Highlight);
-
-            text_annotations.add_inline_annotations(color_swatches, type_style);
+            text_annotations
+                .add_inline_annotations(color_swatches, None)
+                .add_inline_annotations(color_swatches_padding, None);
         };
         let config = doc.config.load();
         let width = self.inner_width(doc);

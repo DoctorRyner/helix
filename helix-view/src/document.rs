@@ -285,6 +285,7 @@ pub struct DocumentColorSwatches {
     pub id: ColorSwatchesId,
 
     pub color_swatches: Vec<InlineAnnotation>,
+    pub color_swatches_padding: Vec<InlineAnnotation>,
     pub colors: Vec<Color>,
 }
 
@@ -294,6 +295,7 @@ impl DocumentColorSwatches {
         Self {
             id,
             color_swatches: Vec::new(),
+            color_swatches_padding: Vec::new(),
             colors: Vec::new(),
         }
     }
@@ -1493,9 +1495,11 @@ impl Document {
                 id: _,
                 colors: _,
                 color_swatches,
+                color_swatches_padding,
             } = text_annotation;
 
             apply_inlay_hint_changes(color_swatches);
+            apply_inlay_hint_changes(color_swatches_padding);
         }
 
         helix_event::dispatch(DocumentDidChange {

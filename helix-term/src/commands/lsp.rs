@@ -1486,7 +1486,7 @@ fn compute_color_swatches_for_view(
             swatches.sort_by_key(|inlay_hint| inlay_hint.range.start);
 
             let mut color_swatches = Vec::with_capacity(swatches.len());
-            // let mut color_swatches_padding = Vec::with_capacity(swatches.len());
+            let mut color_swatches_padding = Vec::with_capacity(swatches.len());
             let mut colors = Vec::with_capacity(swatches.len());
 
             let doc_text = doc.text();
@@ -1499,7 +1499,8 @@ fn compute_color_swatches_for_view(
                     continue;
                 };
 
-                color_swatches.push(InlineAnnotation::new(swatch_index, "■ "));
+                color_swatches.push(InlineAnnotation::new(swatch_index, "■"));
+                color_swatches_padding.push(InlineAnnotation::new(swatch_index, " "));
                 colors.push(Color::Rgb(
                     (swatch.color.red * 255.) as u8,
                     (swatch.color.green * 255.) as u8,
@@ -1513,6 +1514,7 @@ fn compute_color_swatches_for_view(
                     id: new_doc_color_swatches_id,
                     colors,
                     color_swatches,
+                    color_swatches_padding,
                 },
             );
 
