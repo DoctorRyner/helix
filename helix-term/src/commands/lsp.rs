@@ -1446,9 +1446,9 @@ fn compute_color_swatches_for_view(
 
     // Don't recompute the color swatches in case nothing has changed about the view
     if !doc.color_swatches_outdated
-        && doc
-            .color_swatches(view_id)
-            .map_or(false, |dih| dih.id == new_doc_color_swatches_id)
+        && doc.color_swatches(view_id).map_or(false, |color_swatches| {
+            color_swatches.id == new_doc_color_swatches_id
+        })
     {
         return None;
     }
@@ -1482,27 +1482,24 @@ fn compute_color_swatches_for_view(
                 }
             };
 
-            // Most language servers will already send them sorted but ensure this is the case to
-            // avoid errors on our end.
+            // Most language servers will already send them sorted but ensure this is the case to avoid errors on our end.
             swatches.sort_by_key(|inlay_hint| inlay_hint.range.start);
 
             let mut color_swatches = Vec::with_capacity(swatches.len());
+            // let mut color_swatches_padding = Vec::with_capacity(swatches.len());
             let mut colors = Vec::with_capacity(swatches.len());
 
             let doc_text = doc.text();
 
             for swatch in swatches {
-                let char_idx = match helix_lsp::util::lsp_pos_to_pos(
-                    doc_text,
-                    swatch.range.start,
-                    offset_encoding,
-                ) {
-                    Some(pos) => pos,
+                let Some(swatch_index) =
+                    helix_lsp::util::lsp_pos_to_pos(doc_text, swatch.range.start, offset_encoding)
+                else {
                     // Skip color swatches that have no "real" position
-                    None => continue,
+                    continue;
                 };
 
-                color_swatches.push(InlineAnnotation::new(char_idx, "■ "));
+                color_swatches.push(InlineAnnotation::new(swatch_index, "■ "));
                 colors.push(Color::Rgb(
                     (swatch.color.red * 255.) as u8,
                     (swatch.color.green * 255.) as u8,
