@@ -1120,10 +1120,7 @@ impl Client {
         text_document: lsp::TextDocumentIdentifier,
         work_done_token: Option<lsp::ProgressToken>,
     ) -> Option<impl Future<Output = Result<Value>>> {
-        if self.capabilities.get().unwrap().color_provider.is_none() {
-            return None;
-        }
-
+        self.capabilities.get().unwrap().color_provider.as_ref()?;
         let params = lsp::DocumentColorParams {
             text_document,
             work_done_progress_params: lsp::WorkDoneProgressParams {
