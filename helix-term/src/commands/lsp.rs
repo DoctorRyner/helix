@@ -1262,9 +1262,7 @@ pub fn compute_inlay_hints_for_all_views(editor: &mut Editor, jobs: &mut crate::
 }
 
 fn lsp_annotations_line_range(view: &View, doc: &Document) -> (usize, usize) {
-    // Compute ~3 times the current view heigh, that way some scrolling
-    // will not show half the view with annoations half without while still being faster
-    // than computing all the hints for the full file
+    // Compute ~3 times the current view height, that way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
     let doc_text = doc.text();
     let len_lines = doc_text.len_lines();
 
@@ -1419,9 +1417,8 @@ pub fn compute_color_swatches_for_all_views(editor: &mut Editor, jobs: &mut crat
     }
 
     for (view, _) in editor.tree.views() {
-        let doc = match editor.documents.get(&view.doc) {
-            Some(doc) => doc,
-            None => continue,
+        let Some(doc) = editor.documents.get(&view.doc) else {
+            continue;
         };
         if let Some(callback) = compute_color_swatches_for_view(view, doc) {
             jobs.callback(callback);
