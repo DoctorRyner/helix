@@ -1461,8 +1461,8 @@ impl Document {
         self.diagnostics
             .sort_by_key(|diagnostic| (diagnostic.range, diagnostic.severity, diagnostic.provider));
 
-        // Update the inlay hint annotations' positions, helping ensure they are displayed in the proper place
-        let apply_lsp_annotations_changes = |annotations: &mut Vec<InlineAnnotation>| {
+        // Update the inline annotations' positions, helping ensure they are displayed in the proper place
+        let apply_inline_annotations_changes = |annotations: &mut Vec<InlineAnnotation>| {
             changes.update_positions(
                 annotations
                     .iter_mut()
@@ -1483,11 +1483,11 @@ impl Document {
                 padding_after_inlay_hints,
             } = text_annotation;
 
-            apply_lsp_annotations_changes(padding_before_inlay_hints);
-            apply_lsp_annotations_changes(type_inlay_hints);
-            apply_lsp_annotations_changes(parameter_inlay_hints);
-            apply_lsp_annotations_changes(other_inlay_hints);
-            apply_lsp_annotations_changes(padding_after_inlay_hints);
+            apply_inline_annotations_changes(padding_before_inlay_hints);
+            apply_inline_annotations_changes(type_inlay_hints);
+            apply_inline_annotations_changes(parameter_inlay_hints);
+            apply_inline_annotations_changes(other_inlay_hints);
+            apply_inline_annotations_changes(padding_after_inlay_hints);
         }
 
         for text_annotation in self.color_swatches.values_mut() {
@@ -1498,8 +1498,8 @@ impl Document {
                 color_swatches_padding,
             } = text_annotation;
 
-            apply_lsp_annotations_changes(color_swatches);
-            apply_lsp_annotations_changes(color_swatches_padding);
+            apply_inline_annotations_changes(color_swatches);
+            apply_inline_annotations_changes(color_swatches_padding);
         }
 
         helix_event::dispatch(DocumentDidChange {
@@ -2256,6 +2256,26 @@ impl Document {
     /// (since it often means inlay hints have been fully deactivated).
     pub fn reset_all_inlay_hints(&mut self) {
         self.inlay_hints = Default::default();
+    }
+
+    /// Compute ~3 times the current view height, that way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
+    pub fn inline_annotations_line_range(
+        &self,
+        view_height: usize,
+        view_id: ViewId,
+    ) -> (usize, usize) {
+        let doc_text = self.text();
+        let len_lines = doc_text.len_lines();
+
+        let first_visible_line =
+            doc_text.char_to_line(self.view_offset(view_id).anchor.min(doc_text.len_chars()));
+
+        let first_line = first_visible_line.saturating_sub(view_height);
+        let last_line = first_visible_line
+            .saturating_add(view_height.saturating_mul(2))
+            .min(len_lines);
+
+        (first_line, last_line)
     }
 }
 

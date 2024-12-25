@@ -1272,23 +1272,6 @@ pub fn compute_lsp_annotations_for_all_views(editor: &mut Editor, jobs: &mut cra
     }
 }
 
-fn lsp_annotations_line_range(view: &View, doc: &Document) -> (usize, usize) {
-    // Compute ~3 times the current view height, that way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
-    let doc_text = doc.text();
-    let len_lines = doc_text.len_lines();
-
-    let view_height = view.inner_height();
-    let first_visible_line =
-        doc_text.char_to_line(doc.view_offset(view.id).anchor.min(doc_text.len_chars()));
-
-    let first_line = first_visible_line.saturating_sub(view_height);
-    let last_line = first_visible_line
-        .saturating_add(view_height.saturating_mul(2))
-        .min(len_lines);
-
-    (first_line, last_line)
-}
-
 fn compute_inlay_hints_for_view(
     view: &View,
     doc: &Document,
@@ -1300,7 +1283,7 @@ fn compute_inlay_hints_for_view(
         .language_servers_with_feature(LanguageServerFeature::InlayHints)
         .next()?;
 
-    let (first_line, last_line) = lsp_annotations_line_range(view, doc);
+    let (first_line, last_line) = doc.inline_annotations_line_range(view.inner_height(), view.id);
 
     let new_doc_inlay_hints_id = DocumentInlayHintsId {
         first_line,
@@ -1433,7 +1416,7 @@ fn compute_color_swatches_for_view(
         .language_servers_with_feature(LanguageServerFeature::ColorProvider)
         .next()?;
 
-    let (first_line, last_line) = lsp_annotations_line_range(view, doc);
+    let (first_line, last_line) = doc.inline_annotations_line_range(view.inner_height(), view.id);
 
     let new_doc_color_swatches_id = ColorSwatchesId {
         first_line,
