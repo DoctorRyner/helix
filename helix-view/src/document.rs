@@ -2258,7 +2258,8 @@ impl Document {
         self.inlay_hints = Default::default();
     }
 
-    /// Compute ~3 times the current view height, that way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
+    /// Compute the range of lines for which inline annotations should be computed, which will be ~3 times the current view height.
+    /// That way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
     pub fn inline_annotations_line_range(
         &self,
         view_height: usize,
