@@ -1442,9 +1442,11 @@ fn compute_color_swatches_for_view(
 
     // Don't recompute the color swatches in case nothing has changed about the view
     if !doc.color_swatches_outdated
-        && doc.color_swatches(view_id).map_or(false, |color_swatches| {
-            color_swatches.id == new_doc_color_swatches_id
-        })
+        && doc
+            .color_swatches(view_id)
+            .map_or(false, |doc_color_swatches| {
+                doc_color_swatches.id == new_doc_color_swatches_id
+            })
     {
         return None;
     }
@@ -1473,17 +1475,18 @@ fn compute_color_swatches_for_view(
                         view_id,
                         DocumentColorSwatches::empty_with_id(new_doc_color_swatches_id),
                     );
-                    doc.color_swatches_outdated = false;
                     return;
                 }
             };
 
             // Most language servers will already send them sorted but ensure this is the case to avoid errors on our end.
-            swatches.sort_by_key(|inlay_hint| inlay_hint.range.start);
+            swatches.sort_by_key(|swatch| swatch.range.start);
 
-            let mut color_swatches = Vec::with_capacity(swatches.len());
-            let mut color_swatches_padding = Vec::with_capacity(swatches.len());
-            let mut colors = Vec::with_capacity(swatches.len());
+            let swatch_count = swatches.len();
+
+            let mut color_swatches = Vec::with_capacity(swatch_count);
+            let mut color_swatches_padding = Vec::with_capacity(swatch_count);
+            let mut colors = Vec::with_capacity(swatch_count);
 
             let doc_text = doc.text();
 
@@ -1513,8 +1516,6 @@ fn compute_color_swatches_for_view(
                     color_swatches_padding,
                 },
             );
-
-            doc.color_swatches_outdated = false;
         },
     );
 

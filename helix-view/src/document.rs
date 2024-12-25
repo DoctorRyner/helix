@@ -2231,6 +2231,7 @@ impl Document {
 
     pub fn set_color_swatches(&mut self, view_id: ViewId, color_swatches: DocumentColorSwatches) {
         self.color_swatches.insert(view_id, color_swatches);
+        self.color_swatches_outdated = false;
     }
 
     pub fn set_jump_labels(&mut self, view_id: ViewId, labels: Vec<Overlay>) {
