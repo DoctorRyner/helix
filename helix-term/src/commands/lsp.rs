@@ -1245,18 +1245,29 @@ pub fn select_references_to_symbol_under_cursor(cx: &mut Context) {
     );
 }
 
-pub fn compute_inlay_hints_for_all_views(editor: &mut Editor, jobs: &mut crate::job::Jobs) {
-    if !editor.config().lsp.display_inlay_hints {
+pub fn compute_lsp_annotations_for_all_views(editor: &mut Editor, jobs: &mut crate::job::Jobs) {
+    let display_inlay_hints = editor.config().lsp.display_inlay_hints;
+    let display_color_swatches = editor.config().lsp.display_color_swatches;
+
+    if !display_inlay_hints && !display_color_swatches {
         return;
     }
 
     for (view, _) in editor.tree.views() {
-        let doc = match editor.documents.get(&view.doc) {
-            Some(doc) => doc,
-            None => continue,
+        let Some(doc) = editor.documents.get(&view.doc) else {
+            continue;
         };
-        if let Some(callback) = compute_inlay_hints_for_view(view, doc) {
-            jobs.callback(callback);
+
+        if display_inlay_hints {
+            if let Some(callback) = compute_inlay_hints_for_view(view, doc) {
+                jobs.callback(callback);
+            }
+        }
+
+        if display_color_swatches {
+            if let Some(callback) = compute_color_swatches_for_view(view, doc) {
+                jobs.callback(callback);
+            }
         }
     }
 }
@@ -1409,21 +1420,6 @@ fn compute_inlay_hints_for_view(
     );
 
     Some(callback)
-}
-
-pub fn compute_color_swatches_for_all_views(editor: &mut Editor, jobs: &mut crate::job::Jobs) {
-    if !editor.config().lsp.display_color_swatches {
-        return;
-    }
-
-    for (view, _) in editor.tree.views() {
-        let Some(doc) = editor.documents.get(&view.doc) else {
-            continue;
-        };
-        if let Some(callback) = compute_color_swatches_for_view(view, doc) {
-            jobs.callback(callback);
-        }
-    }
 }
 
 fn compute_color_swatches_for_view(
