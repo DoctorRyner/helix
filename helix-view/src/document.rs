@@ -294,9 +294,9 @@ impl DocumentColorSwatches {
     pub fn empty_with_id(id: ColorSwatchesId) -> Self {
         Self {
             id,
-            color_swatches: Vec::new(),
-            color_swatches_padding: Vec::new(),
-            colors: Vec::new(),
+            color_swatches: vec![],
+            color_swatches_padding: vec![],
+            colors: vec![],
         }
     }
 }
@@ -1462,7 +1462,7 @@ impl Document {
             .sort_by_key(|diagnostic| (diagnostic.range, diagnostic.severity, diagnostic.provider));
 
         // Update the inlay hint annotations' positions, helping ensure they are displayed in the proper place
-        let apply_inlay_hint_changes = |annotations: &mut Vec<InlineAnnotation>| {
+        let apply_lsp_annotations_changes = |annotations: &mut Vec<InlineAnnotation>| {
             changes.update_positions(
                 annotations
                     .iter_mut()
@@ -1483,11 +1483,11 @@ impl Document {
                 padding_after_inlay_hints,
             } = text_annotation;
 
-            apply_inlay_hint_changes(padding_before_inlay_hints);
-            apply_inlay_hint_changes(type_inlay_hints);
-            apply_inlay_hint_changes(parameter_inlay_hints);
-            apply_inlay_hint_changes(other_inlay_hints);
-            apply_inlay_hint_changes(padding_after_inlay_hints);
+            apply_lsp_annotations_changes(padding_before_inlay_hints);
+            apply_lsp_annotations_changes(type_inlay_hints);
+            apply_lsp_annotations_changes(parameter_inlay_hints);
+            apply_lsp_annotations_changes(other_inlay_hints);
+            apply_lsp_annotations_changes(padding_after_inlay_hints);
         }
 
         for text_annotation in self.color_swatches.values_mut() {
@@ -1498,8 +1498,8 @@ impl Document {
                 color_swatches_padding,
             } = text_annotation;
 
-            apply_inlay_hint_changes(color_swatches);
-            apply_inlay_hint_changes(color_swatches_padding);
+            apply_lsp_annotations_changes(color_swatches);
+            apply_lsp_annotations_changes(color_swatches_padding);
         }
 
         helix_event::dispatch(DocumentDidChange {
