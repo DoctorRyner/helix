@@ -24,6 +24,10 @@ Packaging:
 
 As always, a big thank you to all of the contributors! This release saw changes from 171 contributors.
 
+Breaking changes:
+
+* The `editor.lsp.display-messages` key now controls messages sent with the LSP `window/showMessage` notification rather than progress messages. If you want to enable progress messages you should now enable the `editor.lsp.display-progress-messages` key instead. ([#5535](https://github.com/helix-editor/helix/pull/5535))
+
 Features:
 
 * Big refactor for `Picker`s ([#9647](https://github.com/helix-editor/helix/pull/9647), [#11209](https://github.com/helix-editor/helix/pull/11209), [#11216](https://github.com/helix-editor/helix/pull/11216), [#11211](https://github.com/helix-editor/helix/pull/11211), [#11343](https://github.com/helix-editor/helix/pull/11343), [#11406](https://github.com/helix-editor/helix/pull/11406))
@@ -34,7 +38,7 @@ Features:
 * Continue line comments in `o`/`O` and on `<ret>` in insert mode ([#10996](https://github.com/helix-editor/helix/pull/10996), [#12213](https://github.com/helix-editor/helix/pull/12213), [#12215](https://github.com/helix-editor/helix/pull/12215))
 * Allow configuring and switching clipboard providers at runtime ([#10839](https://github.com/helix-editor/helix/pull/10839), [b855cd0](https://github.com/helix-editor/helix/commit/b855cd0), [467fad5](https://github.com/helix-editor/helix/commit/467fad5), [191b0f0](https://github.com/helix-editor/helix/commit/191b0f0))
 * Add support for path completion ([#2608](https://github.com/helix-editor/helix/pull/2608))
-* Support bindings with the Super (Cwd/Win/Meta) modifier ([#6592](https://github.com/helix-editor/helix/pull/6592))
+* Support bindings with the Super (Cmd/Win/Meta) modifier ([#6592](https://github.com/helix-editor/helix/pull/6592))
 * Support rendering and jumping between tabstops in snippet completions ([#9801](https://github.com/helix-editor/helix/pull/9801))
 * Allow theming directory completions ([#12205](https://github.com/helix-editor/helix/pull/12205), [#12295](https://github.com/helix-editor/helix/pull/12295))
 

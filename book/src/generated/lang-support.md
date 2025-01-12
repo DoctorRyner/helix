@@ -23,6 +23,7 @@
 | circom | ✓ |  |  | `circom-lsp` |
 | clojure | ✓ |  |  | `clojure-lsp` |
 | cmake | ✓ | ✓ | ✓ | `cmake-language-server` |
+| codeql | ✓ | ✓ |  | `codeql` |
 | comment | ✓ |  |  |  |
 | common-lisp | ✓ |  | ✓ | `cl-lsp` |
 | cpon | ✓ |  | ✓ |  |
@@ -210,7 +211,7 @@
 | tact | ✓ | ✓ | ✓ |  |
 | task | ✓ |  |  |  |
 | tcl | ✓ |  | ✓ |  |
-| teal | ✓ |  |  |  |
+| teal | ✓ |  |  | `teal-language-server` |
 | templ | ✓ |  |  | `templ` |
 | textproto | ✓ | ✓ | ✓ |  |
 | tfvars | ✓ |  | ✓ | `terraform-ls` |

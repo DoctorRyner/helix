@@ -3127,12 +3127,11 @@ fn buffer_picker(cx: &mut Context) {
     })
     .with_preview(|editor, meta| {
         let doc = &editor.documents.get(&meta.id)?;
-        let &view_id = doc.selections().keys().next()?;
-        let line = doc
-            .selection(view_id)
-            .primary()
-            .cursor_line(doc.text().slice(..));
-        Some((meta.id.into(), Some((line, line))))
+        let lines = doc.selections().values().next().map(|selection| {
+            let cursor_line = selection.primary().cursor_line(doc.text().slice(..));
+            (cursor_line, cursor_line)
+        });
+        Some((meta.id.into(), lines))
     });
     cx.push_layer(Box::new(overlaid(picker)));
 }
@@ -4864,7 +4863,7 @@ fn join_selections_impl(cx: &mut Context, select_space: bool) {
         changes.reserve(lines.len());
 
         let first_line_idx = slice.line_to_char(start);
-        let first_line_idx = skip_while(slice, first_line_idx, |ch| matches!(ch, ' ' | 't'))
+        let first_line_idx = skip_while(slice, first_line_idx, |ch| matches!(ch, ' ' | '\t'))
             .unwrap_or(first_line_idx);
         let first_line = slice.slice(first_line_idx..);
         let mut current_comment_token = comment_tokens
