@@ -780,6 +780,11 @@ impl Document {
                 ))
             })
         {
+            log::debug!(
+                "formatting '{}' with command '{}', args {fmt_args:?}",
+                self.display_name(),
+                fmt_cmd.display(),
+            );
             use std::process::Stdio;
             let text = self.text().clone();
 
@@ -2256,7 +2261,6 @@ pub enum FormatterError {
     BrokenStdin,
     WaitForOutputFailed,
     InvalidUtf8Output,
-    DiskReloadError(String),
     NonZeroExitStatus(Option<String>),
 }
 
@@ -2271,7 +2275,6 @@ impl Display for FormatterError {
             Self::BrokenStdin => write!(f, "Could not write to formatter stdin"),
             Self::WaitForOutputFailed => write!(f, "Waiting for formatter output failed"),
             Self::InvalidUtf8Output => write!(f, "Invalid UTF-8 formatter output"),
-            Self::DiskReloadError(error) => write!(f, "Error reloading file from disk: {}", error),
             Self::NonZeroExitStatus(Some(output)) => write!(f, "Formatter error: {}", output),
             Self::NonZeroExitStatus(None) => {
                 write!(f, "Formatter exited with non zero exit status")

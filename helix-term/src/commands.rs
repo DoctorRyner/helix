@@ -2795,7 +2795,7 @@ fn delete_selection_impl(cx: &mut Context, op: Operation, yank: YankAction) {
         }
         Operation::Change => {
             if only_whole_lines {
-                open_above(cx);
+                open(cx, Open::Above, CommentContinuation::Disabled);
             } else {
                 enter_insert_mode(cx);
             }
@@ -3521,14 +3521,19 @@ async fn make_format_callback(
         let doc = doc_mut!(editor, &doc_id);
         let view = view_mut!(editor, view_id);
 
-        if let Ok(format) = format {
-            if doc.version() == doc_version {
-                doc.apply(&format, view.id);
-                doc.append_changes_to_history(view);
-                doc.detect_indent_and_line_ending();
-                view.ensure_cursor_in_view(doc, scrolloff);
-            } else {
-                log::info!("discarded formatting changes because the document changed");
+        match format {
+            Ok(format) => {
+                if doc.version() == doc_version {
+                    doc.apply(&format, view.id);
+                    doc.append_changes_to_history(view);
+                    doc.detect_indent_and_line_ending();
+                    view.ensure_cursor_in_view(doc, scrolloff);
+                } else {
+                    log::info!("discarded formatting changes because the document changed");
+                }
+            }
+            Err(err) => {
+                log::info!("failed to format '{}': {err}", doc.display_name());
             }
         }
 
@@ -3549,16 +3554,32 @@ pub enum Open {
     Above,
 }
 
-fn open(cx: &mut Context, open: Open) {
+#[derive(PartialEq)]
+pub enum CommentContinuation {
+    Enabled,
+    Disabled,
+}
+
+fn open(cx: &mut Context, open: Open, comment_continuation: CommentContinuation) {
     let count = cx.count();
     enter_insert_mode(cx);
+    let config = cx.editor.config();
     let (view, doc) = current!(cx.editor);
 
     let text = doc.text().slice(..);
     let contents = doc.text();
     let selection = doc.selection(view.id);
+    let mut offs = 0;
 
     let mut ranges = SmallVec::with_capacity(selection.len());
+
+    let continue_comment_tokens =
+        if comment_continuation == CommentContinuation::Enabled && config.continue_comments {
+            doc.language_config()
+                .and_then(|config| config.comment_tokens.as_ref())
+        } else {
+            None
+        };
 
     let mut transaction = Transaction::change_by_selection(contents, selection, |range| {
         // the line number, where the cursor is currently
@@ -3575,13 +3596,8 @@ fn open(cx: &mut Context, open: Open) {
 
         let above_next_new_line_num = next_new_line_num.saturating_sub(1);
 
-        let continue_comment_token = if doc.config.load().continue_comments {
-            doc.language_config()
-                .and_then(|config| config.comment_tokens.as_ref())
-                .and_then(|tokens| comment::get_comment_token(text, tokens, curr_line_num))
-        } else {
-            None
-        };
+        let continue_comment_token = continue_comment_tokens
+            .and_then(|tokens| comment::get_comment_token(text, tokens, curr_line_num));
 
         // Index to insert newlines after, as well as the char width
         // to use to compensate for those inserted newlines.
@@ -3600,7 +3616,7 @@ fn open(cx: &mut Context, open: Open) {
             _ => indent::indent_for_newline(
                 doc.language_config(),
                 doc.syntax(),
-                &doc.config.load().indent_heuristic,
+                &config.indent_heuristic,
                 &doc.indent_style,
                 doc.tab_width(),
                 text,
@@ -3633,7 +3649,7 @@ fn open(cx: &mut Context, open: Open) {
         let text = text.repeat(count);
 
         // calculate new selection ranges
-        let pos = above_next_line_end_index + above_next_line_end_width;
+        let pos = offs + above_next_line_end_index + above_next_line_end_width;
         let comment_len = continue_comment_token
             .map(|token| token.len() + 1) // `+ 1` for the extra space added
             .unwrap_or_default();
@@ -3645,6 +3661,9 @@ fn open(cx: &mut Context, open: Open) {
                 pos + (i * (1 + indent_len + comment_len)) + indent_len + comment_len,
             ));
         }
+
+        // update the offset for the next range
+        offs += text.chars().count();
 
         (
             above_next_line_end_index,
@@ -3660,12 +3679,12 @@ fn open(cx: &mut Context, open: Open) {
 
 // o inserts a new line after each line with a selection
 fn open_below(cx: &mut Context) {
-    open(cx, Open::Below)
+    open(cx, Open::Below, CommentContinuation::Enabled)
 }
 
 // O inserts a new line before each line with a selection
 fn open_above(cx: &mut Context) {
-    open(cx, Open::Above)
+    open(cx, Open::Above, CommentContinuation::Enabled)
 }
 
 fn normal_mode(cx: &mut Context) {
@@ -4059,17 +4078,29 @@ pub mod insert {
     }
 
     pub fn insert_newline(cx: &mut Context) {
+        let config = cx.editor.config();
         let (view, doc) = current_ref!(cx.editor);
         let text = doc.text().slice(..);
+        let line_ending = doc.line_ending.as_str();
 
         let contents = doc.text();
-        let selection = doc.selection(view.id).clone();
+        let selection = doc.selection(view.id);
         let mut ranges = SmallVec::with_capacity(selection.len());
 
         // TODO: this is annoying, but we need to do it to properly calculate pos after edits
         let mut global_offs = 0;
+        let mut new_text = String::new();
 
-        let mut transaction = Transaction::change_by_selection(contents, &selection, |range| {
+        let continue_comment_tokens = if config.continue_comments {
+            doc.language_config()
+                .and_then(|config| config.comment_tokens.as_ref())
+        } else {
+            None
+        };
+
+        let mut transaction = Transaction::change_by_selection(contents, selection, |range| {
+            // Tracks the number of trailing whitespace characters deleted by this selection.
+            let mut chars_deleted = 0;
             let pos = range.cursor(text);
 
             let prev = if pos == 0 {
@@ -4082,15 +4113,8 @@ pub mod insert {
             let current_line = text.char_to_line(pos);
             let line_start = text.line_to_char(current_line);
 
-            let mut new_text = String::new();
-
-            let continue_comment_token = if doc.config.load().continue_comments {
-                doc.language_config()
-                    .and_then(|config| config.comment_tokens.as_ref())
-                    .and_then(|tokens| comment::get_comment_token(text, tokens, current_line))
-            } else {
-                None
-            };
+            let continue_comment_token = continue_comment_tokens
+                .and_then(|tokens| comment::get_comment_token(text, tokens, current_line));
 
             let (from, to, local_offs) = if let Some(idx) =
                 text.slice(line_start..pos).last_non_whitespace_char()
@@ -4103,7 +4127,7 @@ pub mod insert {
                     _ => indent::indent_for_newline(
                         doc.language_config(),
                         doc.syntax(),
-                        &doc.config.load().indent_heuristic,
+                        &config.indent_heuristic,
                         &doc.indent_style,
                         doc.tab_width(),
                         text,
@@ -4122,7 +4146,8 @@ pub mod insert {
                     .map_or(false, |pair| pair.open == prev && pair.close == curr);
 
                 let local_offs = if let Some(token) = continue_comment_token {
-                    new_text.push_str(doc.line_ending.as_str());
+                    new_text.reserve_exact(line_ending.len() + indent.len() + token.len() + 1);
+                    new_text.push_str(line_ending);
                     new_text.push_str(&indent);
                     new_text.push_str(token);
                     new_text.push(' ');
@@ -4130,37 +4155,39 @@ pub mod insert {
                 } else if on_auto_pair {
                     // line where the cursor will be
                     let inner_indent = indent.clone() + doc.indent_style.as_str();
-                    new_text.reserve_exact(2 + indent.len() + inner_indent.len());
-                    new_text.push_str(doc.line_ending.as_str());
+                    new_text
+                        .reserve_exact(line_ending.len() * 2 + indent.len() + inner_indent.len());
+                    new_text.push_str(line_ending);
                     new_text.push_str(&inner_indent);
 
                     // line where the matching pair will be
                     let local_offs = new_text.chars().count();
-                    new_text.push_str(doc.line_ending.as_str());
+                    new_text.push_str(line_ending);
                     new_text.push_str(&indent);
 
                     local_offs
                 } else {
-                    new_text.reserve_exact(1 + indent.len());
-                    new_text.push_str(doc.line_ending.as_str());
+                    new_text.reserve_exact(line_ending.len() + indent.len());
+                    new_text.push_str(line_ending);
                     new_text.push_str(&indent);
 
                     new_text.chars().count()
                 };
 
+                // Note that `first_trailing_whitespace_char` is at least `pos` so this unsigned
+                // subtraction cannot underflow.
+                chars_deleted = pos - first_trailing_whitespace_char;
+
                 (
                     first_trailing_whitespace_char,
                     pos,
-                    // Note that `first_trailing_whitespace_char` is at least `pos` so the
-                    // unsigned subtraction (`pos - first_trailing_whitespace_char`) cannot
-                    // underflow.
-                    local_offs as isize - (pos - first_trailing_whitespace_char) as isize,
+                    local_offs as isize - chars_deleted as isize,
                 )
             } else {
                 // If the current line is all whitespace, insert a line ending at the beginning of
                 // the current line. This makes the current line empty and the new line contain the
                 // indentation of the old line.
-                new_text.push_str(doc.line_ending.as_str());
+                new_text.push_str(line_ending);
 
                 (line_start, line_start, new_text.chars().count() as isize)
             };
@@ -4168,14 +4195,14 @@ pub mod insert {
             let new_range = if range.cursor(text) > range.anchor {
                 // when appending, extend the range by local_offs
                 Range::new(
-                    range.anchor + global_offs,
-                    (range.head as isize + local_offs) as usize + global_offs,
+                    (range.anchor as isize + global_offs) as usize,
+                    (range.head as isize + local_offs + global_offs) as usize,
                 )
             } else {
                 // when inserting, slide the range by local_offs
                 Range::new(
-                    (range.anchor as isize + local_offs) as usize + global_offs,
-                    (range.head as isize + local_offs) as usize + global_offs,
+                    (range.anchor as isize + local_offs + global_offs) as usize,
+                    (range.head as isize + local_offs + global_offs) as usize,
                 )
             };
 
@@ -4183,9 +4210,11 @@ pub mod insert {
             // range.replace(|range| range.is_empty(), head); -> fn extend if cond true, new head pos
             // can be used with cx.mode to do replace or extend on most changes
             ranges.push(new_range);
-            global_offs += new_text.chars().count();
+            global_offs += new_text.chars().count() as isize - chars_deleted as isize;
+            let tendril = Tendril::from(&new_text);
+            new_text.clear();
 
-            (from, to, Some(new_text.into()))
+            (from, to, Some(tendril))
         });
 
         transaction = transaction.with_selection(Selection::new(ranges, selection.primary_index()));

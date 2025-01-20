@@ -1,7 +1,7 @@
 # Language support configuration.
 # See the languages documentation: https://docs.helix-editor.com/master/languages.html
 
-use-grammars = { except = [ "hare", "wren", "gemini" ] }
+use-grammars = { except = [ "wren", "gemini" ] }
 
 [language-server]
 
@@ -1295,7 +1295,7 @@ formatter = { command = "dune", args = ["format-dune-file"] }
 name = "lua"
 injection-regex = "lua"
 scope = "source.lua"
-file-types = ["lua"]
+file-types = ["lua", "rockspec"]
 shebangs = ["lua", "luajit"]
 roots = [".luarc.json", ".luacheckrc", ".stylua.toml", "selene.toml", ".git"]
 comment-token = "--"
@@ -1674,7 +1674,7 @@ scope = "source.dart"
 file-types = ["dart"]
 roots = ["pubspec.yaml"]
 auto-format = true
-comment-token = "//"
+comment-tokens = ["//", "///"]
 block-comment-tokens = { start = "/*", end = "*/" }
 language-servers = [ "dart" ]
 indent = { tab-width = 2, unit = "  " }
@@ -1737,7 +1737,7 @@ grammar = "yaml"
 [[language]]
 name = "git-commit"
 scope = "git.commitmsg"
-file-types = [{ glob = "COMMIT_EDITMSG" }]
+file-types = [{ glob = "COMMIT_EDITMSG" }, { glob = "MERGE_MSG" }]
 comment-token = "#"
 indent = { tab-width = 2, unit = "  " }
 rulers = [51, 73]
@@ -1954,7 +1954,7 @@ language-servers = [ "solc" ]
 
 [[grammar]]
 name = "solidity"
-source = { git = "https://github.com/JoranHonig/tree-sitter-solidity", rev = "08338dcee32603383fcef08f36321900bb7a354b" }
+source = { git = "https://github.com/JoranHonig/tree-sitter-solidity", rev = "f7f5251a3f5b1d04f0799b3571b12918af177fc8" }
 
 [[language]]
 name = "gleam"
@@ -2903,7 +2903,7 @@ indent = { tab-width = 2, unit = "  " }
 
 [[grammar]]
 name = "matlab"
-source = { git = "https://github.com/acristoffers/tree-sitter-matlab", rev = "6071891a8c39600203eba20513666cf93b4d650a" }
+source = { git = "https://github.com/acristoffers/tree-sitter-matlab", rev = "b0a0198b182574cd3ca0447264c83331901b9338" }
 
 [[language]]
 name = "ponylang"
@@ -3970,7 +3970,7 @@ indent = { tab-width = 4, unit = "    " }
 
 [[grammar]]
 name = "spade"
-source = { git = "https://gitlab.com/spade-lang/tree-sitter-spade", rev = "4d5b141017c61fe7e168e0a5c5721ee62b0d9572" }
+source = { git = "https://gitlab.com/spade-lang/tree-sitter-spade", rev = "78bf09a88fc1d396f66b69879f908fc6bd2e6934" }
 
 [[language]]
 name = "amber"
@@ -4054,3 +4054,17 @@ language-servers = ["codeql"]
 [[grammar]]
 name = "ql"
 source = { git = "https://github.com/tree-sitter/tree-sitter-ql", rev = "1fd627a4e8bff8c24c11987474bd33112bead857" }
+
+[[language]]
+name = "gren"
+scope = "source.gren"
+injection-regex = "gren"
+file-types = ["gren"]
+roots = ["gren.json"]
+comment-tokens = "--"
+block-comment-tokens = { start = "{-", end = "-}" }
+indent = { tab-width = 4, unit = "    " }
+
+[[grammar]]
+name = "gren"
+source = { git = "https://github.com/MaeBrooks/tree-sitter-gren", rev = "76554f4f2339f5a24eed19c58f2079b51c694152" }
