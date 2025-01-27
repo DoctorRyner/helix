@@ -1773,9 +1773,9 @@ const CANCELLATION_CHECK_INTERVAL: usize = 100;
 /// Indicates which highlight should be applied to a region of source code.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Highlight {
-    /// When we use this type of highlight, we index into the Theme to get the Style
+    /// When we use this type of highlight, we index into the Theme's scopes to get the Style
     Indexed(usize),
-    /// Represents (red, green, blue)
+    /// A custom color, not dependent on the theme. Represents (red, green, blue)
     Rgb(u8, u8, u8),
 }
 
