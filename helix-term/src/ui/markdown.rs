@@ -82,7 +82,7 @@ pub fn highlighted_code_block<'a>(
             }
             HighlightEvent::Source { start, end } => {
                 let style = highlights.iter().fold(text_style, |acc, span| {
-                    acc.patch(theme.style_from_highlight(*span))
+                    acc.patch(theme.highlight_to_style(*span))
                 });
 
                 let mut slice = &text[start..end];

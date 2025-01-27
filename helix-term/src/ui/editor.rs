@@ -199,11 +199,6 @@ impl EditorView {
             inline_diagnostic_config,
             config.end_of_line_diagnostics,
         ));
-        // if let Some(swatches) = doc.color_swatches(view.id) {
-        //     for (swatch, color) in swatches.color_swatches.iter().zip(swatches.colors.iter()) {
-        //         decorations.add_decoration(ColorSwatch::new(*color, swatch.char_idx));
-        //     }
-        // }
         render_document(
             surface,
             inner,

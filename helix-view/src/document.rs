@@ -275,15 +275,13 @@ pub struct DocumentInlayHintsId {
 /// Color swatches are always `InlineAnnotation`s, not overlays or line-ones: LSP may choose to place
 /// them anywhere in the text and will sometime offer config options to move them where the user
 /// wants them but it shouldn't be Helix who decides that so we use the most precise positioning.
-///
-/// To get a tuple of corresponding (Color, Color Swatch) use zip(color_swatches, colors)
 #[derive(Debug, Clone)]
 pub struct DocumentColorSwatches {
     /// Identifier for the color swatches stored in this structure. To be checked to know if they have
     /// to be recomputed on idle or not.
     pub id: ColorSwatchesId,
 
-    // each inlineAnnotation is just of length 1
+    // Each Vec<InlineAnnotation> only has 1 InlineAnnotation
     pub color_swatches: Vec<Vec<InlineAnnotation>>,
     pub colors: Vec<Highlight>,
 
@@ -1473,7 +1471,6 @@ impl Document {
 
         self.inlay_hints_oudated = true;
         self.color_swatches_outdated = true;
-
         for text_annotation in self.inlay_hints.values_mut() {
             let DocumentInlayHints {
                 id: _,
@@ -2262,8 +2259,12 @@ impl Document {
         self.inlay_hints = Default::default();
     }
 
-    /// Compute the range of lines for which inline annotations should be computed, which will be ~3 times the current view height.
-    /// That way some scrolling will not show half the view with annotations half without while still being faster than computing all the hints for the full file
+    /// Compute the range of lines for which inline annotations should be
+    /// computed, which will be ~3 times the current view height.
+    ///
+    /// That way some scrolling will not show half the view with annotations
+    /// half without while still being faster than computing all the hints
+    /// for the full file
     pub fn inline_annotations_line_range(
         &self,
         view_height: usize,

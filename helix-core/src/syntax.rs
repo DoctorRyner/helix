@@ -2643,9 +2643,9 @@ impl<I: Iterator<Item = HighlightEvent>> Iterator for Merge<I> {
 
                 Some(event)
             }
-            (Some(Source { start, end }), Some((span, range))) if start == range.start => {
+            (Some(Source { start, end }), Some((highlight, range))) if start == range.start => {
                 let intersect = range.end.min(end);
-                let event = HighlightStart(*span);
+                let event = HighlightStart(*highlight);
 
                 // enqueue in reverse order
                 self.queue.push(HighlightEnd);
@@ -2668,7 +2668,7 @@ impl<I: Iterator<Item = HighlightEvent>> Iterator for Merge<I> {
                 if intersect == range.end {
                     self.next_span = self.spans.next();
                 } else {
-                    self.next_span = Some((*span, intersect..range.end));
+                    self.next_span = Some((*highlight, intersect..range.end));
                 }
 
                 Some(event)
@@ -2682,8 +2682,8 @@ impl<I: Iterator<Item = HighlightEvent>> Iterator for Merge<I> {
             // even though the range is past the end of the text.  This needs to be
             // handled appropriately by the drawing code by not assuming that
             // all `Source` events point to valid indices in the rope.
-            (None, Some((span, range))) => {
-                let event = HighlightStart(*span);
+            (None, Some((highlight, range))) => {
+                let event = HighlightStart(*highlight);
                 self.queue.push(HighlightEnd);
                 self.queue.push(Source {
                     start: range.start,

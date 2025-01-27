@@ -1675,7 +1675,7 @@ fn tree_sitter_highlight_name(
     };
 
     let content = match highlight {
-        Highlight::Indexed(int) => cx.editor.theme.scope(int).to_string(),
+        Highlight::Indexed(idx) => cx.editor.theme.scope(idx).to_string(),
         Highlight::Rgb(r, g, b) => format!("rgb({r}, {g}, {b})"),
     };
 

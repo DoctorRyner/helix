@@ -294,7 +294,7 @@ fn build_theme_values(
 
 impl Theme {
     #[inline]
-    pub fn style_from_highlight(&self, highlight: Highlight) -> Style {
+    pub fn highlight_to_style(&self, highlight: Highlight) -> Style {
         match highlight {
             Highlight::Indexed(idx) => self.highlights[idx],
             Highlight::Rgb(r, g, b) => Style::default().fg(Color::Rgb(r, g, b)),

@@ -1295,7 +1295,7 @@ fn compute_inlay_hints_for_view(
     if !doc.inlay_hints_oudated
         && doc
             .inlay_hints(view_id)
-            .map_or(false, |dih| dih.id == new_doc_inlay_hints_id)
+            .is_some_and(|dih| dih.id == new_doc_inlay_hints_id)
     {
         return None;
     }
@@ -1342,7 +1342,7 @@ fn compute_inlay_hints_for_view(
 
             // Most language servers will already send them sorted but ensure this is the case to
             // avoid errors on our end.
-            hints.sort_by_key(|inlay_hint| inlay_hint.position);
+            hints.sort_unstable_by_key(|inlay_hint| inlay_hint.position);
 
             let mut padding_before_inlay_hints = Vec::new();
             let mut type_inlay_hints = Vec::new();
@@ -1429,9 +1429,7 @@ fn compute_color_swatches_for_view(
     if !doc.color_swatches_outdated
         && doc
             .color_swatches(view_id)
-            .map_or(false, |doc_color_swatches| {
-                doc_color_swatches.id == new_doc_color_swatches_id
-            })
+            .is_some_and(|doc_color_swatches| doc_color_swatches.id == new_doc_color_swatches_id)
     {
         return None;
     }
@@ -1452,7 +1450,8 @@ fn compute_color_swatches_for_view(
                 return;
             };
 
-            // If we have neither color swatches nor an LSP, empty the color swatches since they're now oudated
+            // If color swatches are empty or we don't have a response,
+            // empty the color swatches since they're now outdated
             let mut swatches = match response {
                 Some(swatches) if !swatches.is_empty() => swatches,
                 _ => {
@@ -1464,8 +1463,9 @@ fn compute_color_swatches_for_view(
                 }
             };
 
-            // Most language servers will already send them sorted but ensure this is the case to avoid errors on our end.
-            swatches.sort_by_key(|swatch| swatch.range.start);
+            // Most language servers will already send them sorted but
+            // we ensure this is the case to avoid errors on our end.
+            swatches.sort_unstable_by_key(|swatch| swatch.range.start);
 
             let swatch_count = swatches.len();
 
