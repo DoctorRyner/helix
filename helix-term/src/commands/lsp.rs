@@ -14,14 +14,16 @@ use tui::{text::Span, widgets::Row};
 use super::{align_view, push_jump, Align, Context, Editor};
 
 use helix_core::{
-    syntax::LanguageServerFeature, text_annotations::InlineAnnotation, Selection, Uri,
+    syntax::{Highlight, LanguageServerFeature},
+    text_annotations::InlineAnnotation,
+    Selection, Uri,
 };
 use helix_stdx::path;
 use helix_view::{
     document::{ColorSwatchesId, DocumentColorSwatches, DocumentInlayHints, DocumentInlayHintsId},
     editor::Action,
     handlers::lsp::SignatureHelpInvoked,
-    theme::{Color, Style},
+    theme::Style,
     Document, View,
 };
 
@@ -1481,9 +1483,9 @@ fn compute_color_swatches_for_view(
                     continue;
                 };
 
-                color_swatches.push(InlineAnnotation::new(swatch_index, "■"));
+                color_swatches.push(vec![InlineAnnotation::new(swatch_index, "■")]);
                 color_swatches_padding.push(InlineAnnotation::new(swatch_index, " "));
-                colors.push(Color::Rgb(
+                colors.push(Highlight::Rgb(
                     (swatch.color.red * 255.) as u8,
                     (swatch.color.green * 255.) as u8,
                     (swatch.color.blue * 255.) as u8,

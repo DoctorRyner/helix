@@ -17,7 +17,7 @@ use helix_core::{
     diagnostic::NumberOrString,
     graphemes::{next_grapheme_boundary, prev_grapheme_boundary},
     movement::Direction,
-    syntax::{self, HighlightEvent},
+    syntax::{self, Highlight, HighlightEvent},
     text_annotations::TextAnnotations,
     unicode::width::UnicodeWidthStr,
     visual_offset_from_block, Change, Position, Range, Selection, Transaction,
@@ -34,8 +34,6 @@ use helix_view::{
 use std::{mem::take, num::NonZeroUsize, path::PathBuf, rc::Rc, sync::Arc};
 
 use tui::{buffer::Buffer as Surface, text::Span};
-
-use super::text_decorations::ColorSwatch;
 
 pub struct EditorView {
     pub keymaps: Keymaps,
@@ -201,11 +199,11 @@ impl EditorView {
             inline_diagnostic_config,
             config.end_of_line_diagnostics,
         ));
-        if let Some(swatches) = doc.color_swatches(view.id) {
-            for (swatch, color) in swatches.color_swatches.iter().zip(swatches.colors.iter()) {
-                decorations.add_decoration(ColorSwatch::new(*color, swatch.char_idx));
-            }
-        }
+        // if let Some(swatches) = doc.color_swatches(view.id) {
+        //     for (swatch, color) in swatches.color_swatches.iter().zip(swatches.colors.iter()) {
+        //         decorations.add_decoration(ColorSwatch::new(*color, swatch.char_idx));
+        //     }
+        // }
         render_document(
             surface,
             inner,
@@ -351,7 +349,7 @@ impl EditorView {
         anchor: usize,
         height: u16,
         text_annotations: &TextAnnotations,
-    ) -> Vec<(usize, std::ops::Range<usize>)> {
+    ) -> Vec<(Highlight, std::ops::Range<usize>)> {
         let text = doc.text().slice(..);
         let row = text.char_to_line(anchor.min(text.len_chars()));
 
@@ -365,7 +363,7 @@ impl EditorView {
     pub fn doc_diagnostics_highlights(
         doc: &Document,
         theme: &Theme,
-    ) -> [Vec<(usize, std::ops::Range<usize>)>; 7] {
+    ) -> [Vec<(Highlight, std::ops::Range<usize>)>; 7] {
         use helix_core::diagnostic::{DiagnosticTag, Range, Severity};
         let get_scope_of = |scope| {
             theme
@@ -390,7 +388,7 @@ impl EditorView {
         let unnecessary = theme.find_scope_index_exact("diagnostic.unnecessary");
         let deprecated = theme.find_scope_index_exact("diagnostic.deprecated");
 
-        let mut default_vec: Vec<(usize, std::ops::Range<usize>)> = Vec::new();
+        let mut default_vec: Vec<(Highlight, std::ops::Range<usize>)> = Vec::new();
         let mut info_vec = Vec::new();
         let mut hint_vec = Vec::new();
         let mut warning_vec = Vec::new();
@@ -399,7 +397,7 @@ impl EditorView {
         let mut deprecated_vec = Vec::new();
 
         let push_diagnostic =
-            |vec: &mut Vec<(usize, std::ops::Range<usize>)>, scope, range: Range| {
+            |vec: &mut Vec<(Highlight, std::ops::Range<usize>)>, scope, range: Range| {
                 // If any diagnostic overlaps ranges with the prior diagnostic,
                 // merge the two together. Otherwise push a new span.
                 match vec.last_mut() {
@@ -435,19 +433,27 @@ impl EditorView {
                     Some(Severity::Warning | Severity::Error)
                 )
             {
-                push_diagnostic(vec, scope, diagnostic.range);
+                push_diagnostic(vec, Highlight::Indexed(scope), diagnostic.range);
             }
 
             for tag in &diagnostic.tags {
                 match tag {
                     DiagnosticTag::Unnecessary => {
                         if let Some(scope) = unnecessary {
-                            push_diagnostic(&mut unnecessary_vec, scope, diagnostic.range)
+                            push_diagnostic(
+                                &mut unnecessary_vec,
+                                Highlight::Indexed(scope),
+                                diagnostic.range,
+                            )
                         }
                     }
                     DiagnosticTag::Deprecated => {
                         if let Some(scope) = deprecated {
-                            push_diagnostic(&mut deprecated_vec, scope, diagnostic.range)
+                            push_diagnostic(
+                                &mut deprecated_vec,
+                                Highlight::Indexed(scope),
+                                diagnostic.range,
+                            )
                         }
                     }
                 }
@@ -473,7 +479,7 @@ impl EditorView {
         theme: &Theme,
         cursor_shape_config: &CursorShapeConfig,
         is_terminal_focused: bool,
-    ) -> Vec<(usize, std::ops::Range<usize>)> {
+    ) -> Vec<(Highlight, std::ops::Range<usize>)> {
         let text = doc.text().slice(..);
         let selection = doc.selection(view.id);
         let primary_idx = selection.primary_index();
@@ -509,7 +515,7 @@ impl EditorView {
         }
         .unwrap_or(base_primary_cursor_scope);
 
-        let mut spans: Vec<(usize, std::ops::Range<usize>)> = Vec::new();
+        let mut spans: Vec<(Highlight, std::ops::Range<usize>)> = Vec::new();
         for (i, range) in selection.iter().enumerate() {
             let selection_is_primary = i == primary_idx;
             let (cursor_scope, selection_scope) = if selection_is_primary {
@@ -526,7 +532,7 @@ impl EditorView {
                     // underline cursor (eg. when a regex prompt has focus) then
                     // the primary cursor will be invisible. This doesn't happen
                     // with block cursors since we manually draw *all* cursors.
-                    spans.push((cursor_scope, range.head..range.head + 1));
+                    spans.push((Highlight::Indexed(cursor_scope), range.head..range.head + 1));
                 }
                 continue;
             }
@@ -542,11 +548,14 @@ impl EditorView {
                     } else {
                         cursor_start
                     };
-                spans.push((selection_scope, range.anchor..selection_end));
+                spans.push((
+                    Highlight::Indexed(selection_scope),
+                    range.anchor..selection_end,
+                ));
                 // add block cursors
                 // skip primary cursor if terminal is unfocused - crossterm cursor is used in that case
                 if !selection_is_primary || (cursor_is_block && is_terminal_focused) {
-                    spans.push((cursor_scope, cursor_start..range.head));
+                    spans.push((Highlight::Indexed(cursor_scope), cursor_start..range.head));
                 }
             } else {
                 // Reverse case.
@@ -554,7 +563,7 @@ impl EditorView {
                 // add block cursors
                 // skip primary cursor if terminal is unfocused - crossterm cursor is used in that case
                 if !selection_is_primary || (cursor_is_block && is_terminal_focused) {
-                    spans.push((cursor_scope, range.head..cursor_end));
+                    spans.push((Highlight::Indexed(cursor_scope), range.head..cursor_end));
                 }
                 // non block cursors look like they exclude the cursor
                 let selection_start = if selection_is_primary
@@ -565,7 +574,10 @@ impl EditorView {
                 } else {
                     cursor_end
                 };
-                spans.push((selection_scope, selection_start..range.anchor));
+                spans.push((
+                    Highlight::Indexed(selection_scope),
+                    selection_start..range.anchor,
+                ));
             }
         }
 
@@ -577,7 +589,7 @@ impl EditorView {
         view: &View,
         doc: &Document,
         theme: &Theme,
-    ) -> Vec<(usize, std::ops::Range<usize>)> {
+    ) -> Vec<(Highlight, std::ops::Range<usize>)> {
         // Highlight matching braces
         if let Some(syntax) = doc.syntax() {
             let text = doc.text().slice(..);
@@ -589,7 +601,7 @@ impl EditorView {
             {
                 // ensure col is on screen
                 if let Some(highlight) = theme.find_scope_index_exact("ui.cursor.match") {
-                    return vec![(highlight, pos..pos + 1)];
+                    return vec![(Highlight::Indexed(highlight), pos..pos + 1)];
                 }
             }
         }
@@ -599,7 +611,7 @@ impl EditorView {
     pub fn tabstop_highlights(
         doc: &Document,
         theme: &Theme,
-    ) -> Option<Vec<(usize, std::ops::Range<usize>)>> {
+    ) -> Option<Vec<(Highlight, std::ops::Range<usize>)>> {
         let snippet = doc.active_snippet.as_ref()?;
         let highlight = theme.find_scope_index_exact("tabstop")?;
         let mut highlights = Vec::new();
@@ -608,7 +620,7 @@ impl EditorView {
                 tabstop
                     .ranges
                     .iter()
-                    .map(|range| (highlight, range.start..range.end)),
+                    .map(|range| (Highlight::Indexed(highlight), range.start..range.end)),
             );
         }
         (!highlights.is_empty()).then_some(highlights)

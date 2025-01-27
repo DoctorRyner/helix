@@ -57,7 +57,7 @@ impl<H: Iterator<Item = HighlightEvent>> Iterator for StyleIter<'_, H> {
                         .active_highlights
                         .iter()
                         .fold(self.text_style, |acc, span| {
-                            acc.patch(self.theme.highlight(span.0))
+                            acc.patch(self.theme.style_from_highlight(*span))
                         });
                     if self.kind == StyleIterKind::BaseHighlights {
                         // Move the end byte index to the nearest character boundary (rounding up)
@@ -218,11 +218,10 @@ pub fn render_text(
                 .unwrap_or((Style::default(), usize::MAX));
         }
 
-        let mut grapheme_style = if let GraphemeSource::VirtualText { highlight } = grapheme.source
-        {
+        let grapheme_style = if let GraphemeSource::VirtualText { highlight } = grapheme.source {
             let mut style = renderer.text_style;
             if let Some(highlight) = highlight {
-                style = style.patch(theme.highlight(highlight.0));
+                style = style.patch(theme.style_from_highlight(highlight));
             }
             GraphemeStyle {
                 syntax_style: style,
@@ -235,7 +234,7 @@ pub fn render_text(
             }
         };
 
-        decorations.decorate_grapheme(renderer, &grapheme, &mut grapheme_style.syntax_style);
+        decorations.decorate_grapheme(renderer, &grapheme);
 
         let virt = grapheme.is_virtual();
         let grapheme_width = renderer.draw_grapheme(

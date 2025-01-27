@@ -1772,7 +1772,12 @@ const CANCELLATION_CHECK_INTERVAL: usize = 100;
 
 /// Indicates which highlight should be applied to a region of source code.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct Highlight(pub usize);
+pub enum Highlight {
+    /// When we use this type of highlight, we index into the Theme to get the Style
+    Indexed(usize),
+    /// Represents (red, green, blue)
+    Rgb(u8, u8, u8),
+}
 
 /// Represents the reason why syntax highlighting failed.
 #[derive(Debug, PartialEq, Eq)]
@@ -2031,7 +2036,7 @@ impl HighlightConfiguration {
                         best_match_len = len;
                     }
                 }
-                best_index.map(Highlight)
+                best_index.map(Highlight::Indexed)
             })
             .collect();
 
@@ -2561,10 +2566,10 @@ const SHEBANG: &str = r"#!\s*(?:\S*[/\\](?:env\s+(?:\-\S+\s+)*)?)?([^\s\.\d]+)";
 
 pub struct Merge<I> {
     iter: I,
-    spans: Box<dyn Iterator<Item = (usize, std::ops::Range<usize>)>>,
+    spans: Box<dyn Iterator<Item = (Highlight, std::ops::Range<usize>)>>,
 
     next_event: Option<HighlightEvent>,
-    next_span: Option<(usize, std::ops::Range<usize>)>,
+    next_span: Option<(Highlight, std::ops::Range<usize>)>,
 
     queue: Vec<HighlightEvent>,
 }
@@ -2572,7 +2577,7 @@ pub struct Merge<I> {
 /// Merge a list of spans into the highlight event stream.
 pub fn merge<I: Iterator<Item = HighlightEvent>>(
     iter: I,
-    spans: Vec<(usize, std::ops::Range<usize>)>,
+    spans: Vec<(Highlight, std::ops::Range<usize>)>,
 ) -> Merge<I> {
     let spans = Box::new(spans.into_iter());
     let mut merge = Merge {
@@ -2640,7 +2645,7 @@ impl<I: Iterator<Item = HighlightEvent>> Iterator for Merge<I> {
             }
             (Some(Source { start, end }), Some((span, range))) if start == range.start => {
                 let intersect = range.end.min(end);
-                let event = HighlightStart(Highlight(*span));
+                let event = HighlightStart(*span);
 
                 // enqueue in reverse order
                 self.queue.push(HighlightEnd);
@@ -2678,7 +2683,7 @@ impl<I: Iterator<Item = HighlightEvent>> Iterator for Merge<I> {
             // handled appropriately by the drawing code by not assuming that
             // all `Source` events point to valid indices in the rope.
             (None, Some((span, range))) => {
-                let event = HighlightStart(Highlight(*span));
+                let event = HighlightStart(*span);
                 self.queue.push(HighlightEnd);
                 self.queue.push(Source {
                     start: range.start,

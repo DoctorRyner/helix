@@ -448,7 +448,7 @@ impl View {
         if let Some(labels) = doc.jump_labels.get(&self.id) {
             let style = theme
                 .and_then(|t| t.find_scope_index("ui.virtual.jump-label"))
-                .map(Highlight);
+                .map(Highlight::Indexed);
             text_annotations.add_overlay(labels, style);
         }
 
@@ -463,13 +463,13 @@ impl View {
         {
             let type_style = theme
                 .and_then(|t| t.find_scope_index("ui.virtual.inlay-hint.type"))
-                .map(Highlight);
+                .map(Highlight::Indexed);
             let parameter_style = theme
                 .and_then(|t| t.find_scope_index("ui.virtual.inlay-hint.parameter"))
-                .map(Highlight);
+                .map(Highlight::Indexed);
             let other_style = theme
                 .and_then(|t| t.find_scope_index("ui.virtual.inlay-hint"))
-                .map(Highlight);
+                .map(Highlight::Indexed);
 
             // Overlapping annotations are ignored apart from the first so the order here is not random:
             // types -> parameters -> others should hopefully be the "correct" order for most use cases,
@@ -483,14 +483,16 @@ impl View {
         };
         if let Some(DocumentColorSwatches {
             id: _,
-            colors: _,
+            colors,
             color_swatches,
             color_swatches_padding,
         }) = doc.color_swatches.get(&self.id)
         {
-            text_annotations
-                .add_inline_annotations(color_swatches, None)
-                .add_inline_annotations(color_swatches_padding, None);
+            for (color_swatch, color) in color_swatches.iter().zip(colors) {
+                text_annotations.add_inline_annotations(color_swatch, Some(*color));
+            }
+
+            text_annotations.add_inline_annotations(color_swatches_padding, None);
         };
         let config = doc.config.load();
         let width = self.inner_width(doc);

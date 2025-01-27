@@ -8,6 +8,7 @@ use super::*;
 
 use helix_core::fuzzy::fuzzy_match;
 use helix_core::indent::MAX_INDENT;
+use helix_core::syntax::Highlight;
 use helix_core::{line_ending, shellwords::Shellwords};
 use helix_stdx::path::home_dir;
 use helix_view::document::{read_to_string, DEFAULT_LANGUAGE_NAME};
@@ -1673,7 +1674,10 @@ fn tree_sitter_highlight_name(
         return Ok(());
     };
 
-    let content = cx.editor.theme.scope(highlight.0).to_string();
+    let content = match highlight {
+        Highlight::Indexed(int) => cx.editor.theme.scope(int).to_string(),
+        Highlight::Rgb(r, g, b) => format!("rgb({r}, {g}, {b})"),
+    };
 
     let callback = async move {
         let call: job::Callback = Callback::EditorCompositor(Box::new(

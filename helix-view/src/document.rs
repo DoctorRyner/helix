@@ -39,7 +39,6 @@ use helix_core::{
     ChangeSet, Diagnostic, LineEnding, Range, Rope, RopeBuilder, Selection, Syntax, Transaction,
 };
 
-use crate::theme::Color;
 use crate::{
     editor::Config,
     events::{DocumentDidChange, SelectionDidChange},
@@ -284,9 +283,11 @@ pub struct DocumentColorSwatches {
     /// to be recomputed on idle or not.
     pub id: ColorSwatchesId,
 
-    pub color_swatches: Vec<InlineAnnotation>,
+    // each inlineAnnotation is just of length 1
+    pub color_swatches: Vec<Vec<InlineAnnotation>>,
+    pub colors: Vec<Highlight>,
+
     pub color_swatches_padding: Vec<InlineAnnotation>,
-    pub colors: Vec<Color>,
 }
 
 impl DocumentColorSwatches {
@@ -1498,7 +1499,10 @@ impl Document {
                 color_swatches_padding,
             } = text_annotation;
 
-            apply_inline_annotations_changes(color_swatches);
+            for color_swatch in color_swatches {
+                apply_inline_annotations_changes(color_swatch);
+            }
+
             apply_inline_annotations_changes(color_swatches_padding);
         }
 
@@ -2219,7 +2223,7 @@ impl Document {
             wrap_indicator: wrap_indicator.into_boxed_str(),
             wrap_indicator_highlight: theme
                 .and_then(|theme| theme.find_scope_index("ui.virtual.wrap"))
-                .map(Highlight),
+                .map(Highlight::Indexed),
             soft_wrap_at_text_width,
         }
     }
