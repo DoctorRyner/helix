@@ -121,7 +121,7 @@ W = "wclose"
 "A-0" = "goto_line_start"
 
 [keys.normal.space]
-q = ":write-quit"
+q = ":quit"
 c = ":buffer-close"
 f = "file_picker_in_current_directory"
 F = "file_picker"
