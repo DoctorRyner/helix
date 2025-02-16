@@ -725,10 +725,7 @@ impl Document {
         config: Arc<dyn DynAccess<Config>>,
     ) -> Result<Self, DocumentOpenError> {
         // If the path is not a regular file (e.g.: /dev/random) it should not be opened.
-        if path
-            .metadata()
-            .map_or(false, |metadata| !metadata.is_file())
-        {
+        if path.metadata().is_ok_and(|metadata| !metadata.is_file()) {
             return Err(DocumentOpenError::IrregularFile);
         }
 
@@ -807,17 +804,21 @@ impl Document {
                         command: fmt_cmd.to_string_lossy().into(),
                         error: e.kind(),
                     })?;
-                {
-                    let mut stdin = process.stdin.take().ok_or(FormatterError::BrokenStdin)?;
-                    to_writer(&mut stdin, (encoding::UTF_8, false), &text)
-                        .await
-                        .map_err(|_| FormatterError::BrokenStdin)?;
-                }
 
-                let output = process
-                    .wait_with_output()
-                    .await
-                    .map_err(|_| FormatterError::WaitForOutputFailed)?;
+                let mut stdin = process.stdin.take().ok_or(FormatterError::BrokenStdin)?;
+                let input_text = text.clone();
+                let input_task = tokio::spawn(async move {
+                    to_writer(&mut stdin, (encoding::UTF_8, false), &input_text).await
+                    // Note that `stdin` is dropped here, causing the pipe to close. This can
+                    // avoid a deadlock with `wait_with_output` below if the process is waiting on
+                    // stdin to close before exiting.
+                });
+                let (input_result, output_result) = tokio::join! {
+                    input_task,
+                    process.wait_with_output(),
+                };
+                let _ = input_result.map_err(|_| FormatterError::BrokenStdin)?;
+                let output = output_result.map_err(|_| FormatterError::WaitForOutputFailed)?;
 
                 if !output.status.success() {
                     if !output.stderr.is_empty() {
@@ -1063,13 +1064,8 @@ impl Document {
                 if !language_server.is_initialized() {
                     continue;
                 }
-                if let Some(notification) = identifier
-                    .clone()
-                    .and_then(|id| language_server.text_document_did_save(id, &text))
-                {
-                    if let Err(err) = notification.await {
-                        log::error!("Failed to send textDocument/didSave: {err}");
-                    }
+                if let Some(id) = identifier.clone() {
+                    language_server.text_document_did_save(id, &text);
                 }
             }
 
@@ -1469,16 +1465,12 @@ impl Document {
             // TODO: move to hook
             // emit lsp notification
             for language_server in self.language_servers() {
-                let notify = language_server.text_document_did_change(
+                let _ = language_server.text_document_did_change(
                     self.versioned_identifier(),
                     &old_doc,
                     self.text(),
                     changes,
                 );
-
-                if let Some(notify) = notify {
-                    tokio::spawn(notify);
-                }
 
                 if language_server.name() == "copilot" {
                     if let Some(document) = self.copilot_document(language_server) {
@@ -2067,8 +2059,8 @@ impl Document {
         };
 
         let ends_at_word =
-            start != end && end != 0 && text.get_char(end - 1).map_or(false, char_is_word);
-        let starts_at_word = start != end && text.get_char(start).map_or(false, char_is_word);
+            start != end && end != 0 && text.get_char(end - 1).is_some_and(char_is_word);
+        let starts_at_word = start != end && text.get_char(start).is_some_and(char_is_word);
 
         Some(Diagnostic {
             range: Range { start, end },
@@ -2101,7 +2093,7 @@ impl Document {
             self.clear_diagnostics(language_server_id);
         } else {
             self.diagnostics.retain(|d| {
-                if language_server_id.map_or(false, |id| id != d.provider) {
+                if language_server_id.is_some_and(|id| id != d.provider) {
                     return true;
                 }
 
