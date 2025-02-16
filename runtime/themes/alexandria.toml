@@ -77,6 +77,7 @@ label = "honey"
 "ui.menu" = { fg = "#DEDDDA", bg = "#0B0D11" }
 "ui.menu.selected" = { fg = "revolver", bg = "#CBCAC7" }
 "ui.menu.scroll" = { fg = "#9a9996", bg = "#5e5c64" }
+"ui.text.directory" = { fg = "#6295E3" }
 
 "diagnostic.hint" = { fg = "#5e84be", modifiers = ["dim"] }
 "diagnostic.info" = { fg = "delta", modifiers = ["dim"] }
