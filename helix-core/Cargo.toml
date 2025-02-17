@@ -21,7 +21,7 @@ helix-loader = { path = "../helix-loader" }
 helix-parsec = { path = "../helix-parsec" }
 
 ropey.workspace = true
-smallvec = "1.13"
+smallvec = "1.14"
 smartstring = "1.0.1"
 unicode-segmentation.workspace = true
 # unicode-width is changing width definitions
@@ -29,7 +29,7 @@ unicode-segmentation.workspace = true
 # width definitions in terminals, we need to replace it.
 # For now lets lock the version to avoid rendering glitches
 # when installing without `--locked`
-unicode-width = "=0.1.12"
+unicode-width = "=0.2.0"
 unicode-general-category = "1.0"
 slotmap.workspace = true
 tree-sitter.workspace = true
