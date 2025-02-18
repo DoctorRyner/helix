@@ -82,8 +82,8 @@ b = ["move_prev_word_start", "collapse_selection"]
 "C-f" = ["move_next_word_start", "collapse_selection"]
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = ["half_page_up"]
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 # t = ["insert_mode", "insert_newline"]
 t = "goto_word"
 l = "jump_backward"
@@ -114,8 +114,8 @@ W = "wclose"
 # "esc" = ["normal_mode", ":w"]
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = ["half_page_up"]
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 "A-minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
 "A-=" = "goto_line_end"
 "A-0" = "goto_line_start"
@@ -149,12 +149,12 @@ w = "extend_prev_word_start"
 f = "extend_next_word_start"
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = "half_page_up"
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 
 [keys.normal.'space'.'space']
 # Extensions using custom script
-# Interactive search in current working directory
+# Interactive search in current working }irectory
 s = ":pipe-to helix-ext search --current"
 # Interactive search in current working directory (include path name in the search)
 S = ":pipe-to helix-ext search --current-inc-path"
