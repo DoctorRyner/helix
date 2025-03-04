@@ -85,7 +85,7 @@ b = ["move_prev_word_start", "collapse_selection"]
 "S-up" = ["scroll_up", "scroll_up"]
 "S-down" = ["scroll_down", "scroll_down"]
 # t = ["insert_mode", "insert_newline"]
-t = "goto_word"
+t = "hover"
 l = "jump_backward"
 "S-l" = "jump_forward"
 "S-left" = "jump_view_left"
@@ -128,9 +128,9 @@ F = "file_picker"
 w = [":format", ":w"]
 "S-[" = ["surround_delete"]
 x = ["yank_to_clipboard", "delete_selection"]
-l = ":lsp-restart"
+# l = ":lsp-restart"
 "[" = "surround_delete"
-t = "hover"
+t = "goto_word"
 H = ":config-reload"
 
 [keys.select]
