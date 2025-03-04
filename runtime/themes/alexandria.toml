@@ -1,6 +1,6 @@
 attribute = "#f1c67a"
-keyword = "#bf8ed8"
-"keyword.directive" = "lilac" # -- preprocessor comments (#if in C)
+"keyword" = { fg = "#bf8ed8", modifiers = ["italic"] }
+"keyword.directive" = { fg = "lilac", modifiers = ["italic"] }
 namespace = "#f19b99"
 punctuation = "#505050"
 "punctuation.delimiter" = "#505050"
@@ -10,16 +10,16 @@ special = "honey"
 variable = "#bbbbbb"
 # variable = "almond" # TODO: metavariables only
 # "variable.parameter" = { fg = "lavender", modifiers = ["underlined"] }
-"variable.parameter" = { fg = "#DBDBDB" }
+"variable.parameter" = { fg = "#DBDBDB", modifiers = ["italic"] }
 "variable.builtin" = "mint"
 type = { fg = "#A6D279", modifiers = ["bold"] }
 "type.builtin" = { fg = "#A6D279", modifiers = ["bold"] }
 constructor = "#f19b99"
-function = "#6295E3"
-"function.macro" = "lilac"
-"function.builtin" = "#f1c67a"
+"function" = { fg = "#6295E3", modifiers = [] }
+"function.macro" = { fg = "lilac", modifiers = ["italic"] }
+"function.builtin" = { fg = "#f1c67a", modifiers = ["italic"] }
 tag = "#f19b99"
-comment = "#808080"
+"comment" = { fg = "#808080", modifiers = [] }
 constant = "#7f89c3"
 "constant.builtin" = "#7f89c3"
 string = "#9fbd7f"
@@ -79,12 +79,12 @@ label = "honey"
 "ui.menu.scroll" = { fg = "#9a9996", bg = "#5e5c64" }
 "ui.text.directory" = { fg = "#6295E3" }
 
-"diagnostic.hint" = { fg = "#5e84be", modifiers = ["dim"] }
-"diagnostic.info" = { fg = "delta", modifiers = ["dim"] }
-"diagnostic.warning" = { fg = "#f4e573", modifiers = ["underlined"] }
-"diagnostic.error" = { fg = "#FF6588", modifiers = ["underlined", "dim"] }
-"diagnostic.unnecessary" = { modifiers = ["dim"] }
-"diagnostic.deprecated" = { modifiers = ["crossed_out"] }
+"diagnostic.hint" = { fg = "#5e84be", modifiers = ["dim", "italic"] }
+"diagnostic.info" = { fg = "delta", modifiers = ["dim", "italic"] }
+"diagnostic.warning" = { fg = "#f4e573", modifiers = ["underlined", "italic"] }
+"diagnostic.error" = { fg = "#FF6588", modifiers = ["underlined", "dim", "italic"] }
+"diagnostic.unnecessary" = { modifiers = ["dim", "italic"] }
+"diagnostic.deprecated" = { modifiers = ["crossed_out", "italic"] }
 
 warning = "#f4e573"
 error = "#FF6588"
@@ -110,4 +110,3 @@ honey = "#efba5d"
 apricot = "#f47868"
 lightning = "#ffcd1c"
 delta = "#6F44F0"
-
