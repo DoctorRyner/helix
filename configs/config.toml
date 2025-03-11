@@ -70,7 +70,7 @@ p = ":clipboard-paste-before"
 "A-down" = ["shrink_selection"]
 w = ["move_prev_word_start", "collapse_selection"]
 f = ["move_next_word_start", "collapse_selection"]
-b = ["move_prev_word_start", "collapse_selection"]
+# b = ["move_prev_word_start", "collapse_selection"]
 "minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
 "=" = "goto_line_end"
 "0" = "goto_line_start"
@@ -95,7 +95,7 @@ l = "jump_backward"
 "S-v" = "vsplit"
 "S-h" = "hsplit"
 W = "wclose"
-
+b = ":echo %sh{git blame --date=short -L %{cursor_line},+1 %{buffer_name} | cut -d' ' -f1-4 | sed 's/$/)/g'}"
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
 "ret" = ["insert_newline", "move_line_up", "insert_at_line_end", "move_line_down"]
@@ -120,6 +120,7 @@ W = "wclose"
 "A-=" = "goto_line_end"
 "A-0" = "goto_line_start"
 
+
 [keys.normal.space]
 q = ":quit"
 c = ":buffer-close"
@@ -133,6 +134,14 @@ x = ["yank_to_clipboard", "delete_selection"]
 t = "goto_word"
 H = ":config-reload"
 y = [ ':sh rm -f /tmp/yazi-path', ':insert-output yazi %{buffer_name} --chooser-file=/tmp/yazi-path', ":open %sh{cat /tmp/yazi-path}", ":redraw", ':set mouse false', ':set mouse true']
+B = [
+  ":write-all",
+  ":new",
+  ":insert-output lazygit",
+  ":buffer-close!",
+  ":redraw",
+  ":reload-all"
+]
 
 [keys.select]
 q = ":clipboard-yank"
