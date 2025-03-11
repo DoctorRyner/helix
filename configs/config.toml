@@ -107,7 +107,7 @@ W = "wclose"
 "down" = "move_line_down"
 "left" = "move_char_left"
 "right" = "move_char_right"
-"A-left" = "move_prev_word_start"
+"A-left" = ["move_prev_word_start", "collapse_selection"]
 "A-right" = ["move_next_word_end", "move_char_right"]
 "A-f" = ["move_next_word_end", "move_char_right", "collapse_selection"]
 "A-b" = ["move_prev_word_start", "collapse_selection"]
@@ -170,3 +170,4 @@ m = ":pipe-to helix-ext git --status"
 B = ":pipe-to helix-ext git --blame"
 # Git browse github repo using default browser
 O = ":pipe-to helix-ext git --browse"
+

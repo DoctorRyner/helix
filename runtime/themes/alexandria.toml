@@ -18,7 +18,7 @@ constructor = "#f19b99"
 "function" = { fg = "#6295E3", modifiers = [] }
 "function.macro" = { fg = "lilac", modifiers = ["italic"] }
 "function.builtin" = { fg = "#f1c67a", modifiers = ["italic"] }
-tag = "#f19b99"
+tag = { fg = "#f19b99", modifiers = ["bold"] }
 "comment" = { fg = "#808080", modifiers = [] }
 constant = "#7f89c3"
 "constant.builtin" = "#7f89c3"
