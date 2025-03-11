@@ -20,7 +20,7 @@ pub use typed::*;
 use helix_core::{
     char_idx_at_visual_offset,
     chars::char_is_word,
-    comment,
+    command_line, comment,
     doc_formatter::TextFormat,
     encoding, find_workspace,
     graphemes::{self, next_grapheme_boundary},
@@ -33,7 +33,7 @@ use helix_core::{
     object, pos_at_coords,
     regex::{self, Regex},
     search::{self, CharMatcher},
-    selection, shellwords, surround,
+    selection, surround,
     syntax::{BlockCommentToken, LanguageServerFeature},
     text_annotations::{Overlay, TextAnnotations},
     textobject,
@@ -58,7 +58,6 @@ use insert::*;
 use movement::Movement;
 
 use crate::{
-    args,
     compositor::{self, Component, Compositor},
     filter_picker_entry,
     job::Callback,
@@ -67,6 +66,7 @@ use crate::{
 
 use crate::job::{self, Jobs};
 use std::{
+    char::{ToLowercase, ToUppercase},
     cmp::Ordering,
     collections::{HashMap, HashSet},
     error::Error,
@@ -210,7 +210,7 @@ use helix_view::{align_view, Align};
 pub enum MappableCommand {
     Typable {
         name: String,
-        args: Vec<String>,
+        args: String,
         doc: String,
     },
     Static {
@@ -245,16 +245,19 @@ impl MappableCommand {
     pub fn execute(&self, cx: &mut Context) {
         match &self {
             Self::Typable { name, args, doc: _ } => {
-                let args: Vec<Cow<str>> = args.iter().map(Cow::from).collect();
                 if let Some(command) = typed::TYPABLE_COMMAND_MAP.get(name.as_str()) {
                     let mut cx = compositor::Context {
                         editor: cx.editor,
                         jobs: cx.jobs,
                         scroll: None,
                     };
-                    if let Err(e) = (command.fun)(&mut cx, &args[..], PromptEvent::Validate) {
+                    if let Err(e) =
+                        typed::execute_command(&mut cx, command, args, PromptEvent::Validate)
+                    {
                         cx.editor.set_error(format!("{}", e));
                     }
+                } else {
+                    cx.editor.set_error(format!("no such command: '{name}'"));
                 }
             }
             Self::Static { fun, .. } => (fun)(cx),
@@ -631,13 +634,8 @@ impl std::str::FromStr for MappableCommand {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if let Some(suffix) = s.strip_prefix(':') {
-            let mut typable_command = suffix.split(' ').map(|arg| arg.trim());
-            let name = typable_command
-                .next()
-                .ok_or_else(|| anyhow!("Expected typable command name"))?;
-            let args = typable_command
-                .map(|s| s.to_owned())
-                .collect::<Vec<String>>();
+            let (name, args, _) = command_line::split(suffix);
+            ensure!(!name.is_empty(), "Expected typable command name");
             typed::TYPABLE_COMMAND_MAP
                 .get(name)
                 .map(|cmd| {
@@ -649,7 +647,7 @@ impl std::str::FromStr for MappableCommand {
                     MappableCommand::Typable {
                         name: cmd.name.to_owned(),
                         doc,
-                        args,
+                        args: args.to_string(),
                     }
                 })
                 .ok_or_else(|| anyhow!("No TypableCommand named '{}'", s))
@@ -1347,7 +1345,7 @@ fn goto_file_impl(cx: &mut Context, action: Action) {
         let path = path::expand(&sel);
         let path = &rel_path.join(path);
         if path.is_dir() {
-            let picker = ui::file_picker(path.into(), &cx.editor.config());
+            let picker = ui::file_picker(cx.editor, path.into());
             cx.push_layer(Box::new(overlaid(picker)));
         } else if let Err(e) = cx.editor.open(path, action) {
             cx.editor.set_error(format!("Open file failed: {:?}", e));
@@ -1384,7 +1382,7 @@ fn open_url(cx: &mut Context, url: Url, action: Action) {
         Ok(_) | Err(_) => {
             let path = &rel_path.join(url.path());
             if path.is_dir() {
-                let picker = ui::file_picker(path.into(), &cx.editor.config());
+                let picker = ui::file_picker(cx.editor, path.into());
                 cx.push_layer(Box::new(overlaid(picker)));
             } else if let Err(e) = cx.editor.open(path, action) {
                 cx.editor.set_error(format!("Open file failed: {:?}", e));
@@ -1730,17 +1728,48 @@ where
     exit_select_mode(cx);
 }
 
+enum CaseSwitcher {
+    Upper(ToUppercase),
+    Lower(ToLowercase),
+    Keep(Option<char>),
+}
+
+impl Iterator for CaseSwitcher {
+    type Item = char;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            CaseSwitcher::Upper(upper) => upper.next(),
+            CaseSwitcher::Lower(lower) => lower.next(),
+            CaseSwitcher::Keep(ch) => ch.take(),
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        match self {
+            CaseSwitcher::Upper(upper) => upper.size_hint(),
+            CaseSwitcher::Lower(lower) => lower.size_hint(),
+            CaseSwitcher::Keep(ch) => {
+                let n = if ch.is_some() { 1 } else { 0 };
+                (n, Some(n))
+            }
+        }
+    }
+}
+
+impl ExactSizeIterator for CaseSwitcher {}
+
 fn switch_case(cx: &mut Context) {
     switch_case_impl(cx, |string| {
         string
             .chars()
             .flat_map(|ch| {
                 if ch.is_lowercase() {
-                    ch.to_uppercase().collect()
+                    CaseSwitcher::Upper(ch.to_uppercase())
                 } else if ch.is_uppercase() {
-                    ch.to_lowercase().collect()
+                    CaseSwitcher::Lower(ch.to_lowercase())
                 } else {
-                    vec![ch]
+                    CaseSwitcher::Keep(Some(ch))
                 }
             })
             .collect()
@@ -2420,7 +2449,7 @@ fn global_search(cx: &mut Context) {
         smart_case: config.search.smart_case,
         file_picker_config: config.file_picker.clone(),
         directory_style: cx.editor.theme.get("ui.text.directory"),
-        number_style: cx.editor.theme.get("constant.numeric"),
+        number_style: cx.editor.theme.get("constant.numeric.integer"),
         colon_style: cx.editor.theme.get("punctuation"),
     };
 
@@ -2434,10 +2463,11 @@ fn global_search(cx: &mut Context) {
                 .map(|p| p.to_string_lossy().to_string() + "/")
                 .unwrap_or_default();
 
-            let filename = path
+            let filename = item
+                .path
                 .file_name()
-                .map(|f| f.to_string_lossy().to_string())
-                .unwrap_or_default();
+                .expect("global search paths are normalized (can't end in `..`)")
+                .to_string_lossy();
 
             Cell::from(Spans::from(vec![
                 Span::styled(directories, config.directory_style),
@@ -3040,7 +3070,7 @@ fn file_picker(cx: &mut Context) {
         cx.editor.set_error("Workspace directory does not exist");
         return;
     }
-    let picker = ui::file_picker(root, &cx.editor.config());
+    let picker = ui::file_picker(cx.editor, root);
     cx.push_layer(Box::new(overlaid(picker)));
 }
 
@@ -3057,7 +3087,7 @@ fn file_picker_in_current_buffer_directory(cx: &mut Context) {
         }
     };
 
-    let picker = ui::file_picker(path, &cx.editor.config());
+    let picker = ui::file_picker(cx.editor, path);
     cx.push_layer(Box::new(overlaid(picker)));
 }
 
@@ -3068,7 +3098,7 @@ fn file_picker_in_current_directory(cx: &mut Context) {
             .set_error("Current working directory does not exist");
         return;
     }
-    let picker = ui::file_picker(cwd, &cx.editor.config());
+    let picker = ui::file_picker(cx.editor, cwd);
     cx.push_layer(Box::new(overlaid(picker)));
 }
 
@@ -3434,7 +3464,7 @@ pub fn command_palette(cx: &mut Context) {
                     .iter()
                     .map(|cmd| MappableCommand::Typable {
                         name: cmd.name.to_owned(),
-                        args: Vec::new(),
+                        args: String::new(),
                         doc: cmd.doc.to_owned(),
                     }),
             );
@@ -5653,7 +5683,10 @@ fn wonly(cx: &mut Context) {
 }
 
 fn select_register(cx: &mut Context) {
-    cx.editor.autoinfo = Some(Info::from_registers(&cx.editor.registers));
+    cx.editor.autoinfo = Some(Info::from_registers(
+        "Select register",
+        &cx.editor.registers,
+    ));
     cx.on_next_key(move |cx, event| {
         cx.editor.autoinfo = None;
         if let Some(ch) = event.char() {
@@ -5663,7 +5696,10 @@ fn select_register(cx: &mut Context) {
 }
 
 fn insert_register(cx: &mut Context) {
-    cx.editor.autoinfo = Some(Info::from_registers(&cx.editor.registers));
+    cx.editor.autoinfo = Some(Info::from_registers(
+        "Insert register",
+        &cx.editor.registers,
+    ));
     cx.on_next_key(move |cx, event| {
         cx.editor.autoinfo = None;
         if let Some(ch) = event.char() {
@@ -5680,7 +5716,10 @@ fn insert_register(cx: &mut Context) {
 }
 
 fn copy_between_registers(cx: &mut Context) {
-    cx.editor.autoinfo = Some(Info::from_registers(&cx.editor.registers));
+    cx.editor.autoinfo = Some(Info::from_registers(
+        "Copy from register",
+        &cx.editor.registers,
+    ));
     cx.on_next_key(move |cx, event| {
         cx.editor.autoinfo = None;
 
@@ -5694,7 +5733,10 @@ fn copy_between_registers(cx: &mut Context) {
         };
         let values: Vec<_> = values.map(|value| value.to_string()).collect();
 
-        cx.editor.autoinfo = Some(Info::from_registers(&cx.editor.registers));
+        cx.editor.autoinfo = Some(Info::from_registers(
+            "Copy into register",
+            &cx.editor.registers,
+        ));
         cx.on_next_key(move |cx, event| {
             cx.editor.autoinfo = None;
 

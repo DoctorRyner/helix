@@ -4,7 +4,7 @@
 | adl | ✓ | ✓ | ✓ |  |
 | agda | ✓ |  |  |  |
 | amber | ✓ |  |  |  |
-| astro | ✓ |  |  |  |
+| astro | ✓ |  |  | `astro-ls` |
 | awk | ✓ | ✓ |  | `awk-language-server` |
 | bash | ✓ | ✓ | ✓ | `bash-language-server` |
 | bass | ✓ |  |  | `bass` |
@@ -121,7 +121,7 @@
 | just | ✓ | ✓ | ✓ |  |
 | kdl | ✓ | ✓ | ✓ |  |
 | koka | ✓ |  | ✓ | `koka` |
-| kotlin | ✓ |  |  | `kotlin-language-server` |
+| kotlin | ✓ | ✓ | ✓ | `kotlin-language-server` |
 | koto | ✓ | ✓ | ✓ | `koto-ls` |
 | latex | ✓ | ✓ |  | `texlab` |
 | ld | ✓ |  | ✓ |  |
@@ -134,6 +134,7 @@
 | log | ✓ |  |  |  |
 | lpf | ✓ |  |  |  |
 | lua | ✓ | ✓ | ✓ | `lua-language-server` |
+| mail | ✓ | ✓ |  |  |
 | make | ✓ |  | ✓ |  |
 | markdoc | ✓ |  |  | `markdoc-ls` |
 | markdown | ✓ |  |  | `marksman`, `markdown-oxide` |
@@ -168,14 +169,14 @@
 | php | ✓ | ✓ | ✓ | `intelephense` |
 | php-only | ✓ |  |  |  |
 | pkgbuild | ✓ | ✓ | ✓ | `termux-language-server`, `bash-language-server` |
-| pkl | ✓ |  | ✓ |  |
+| pkl | ✓ |  | ✓ | `pkl-lsp` |
 | po | ✓ | ✓ |  |  |
 | pod | ✓ |  |  |  |
 | ponylang | ✓ | ✓ | ✓ |  |
 | powershell | ✓ |  |  |  |
 | prisma | ✓ | ✓ |  | `prisma-language-server` |
 | prolog |  |  |  | `swipl` |
-| protobuf | ✓ | ✓ | ✓ | `bufls`, `pb` |
+| protobuf | ✓ | ✓ | ✓ | `buf`, `pb`, `protols` |
 | prql | ✓ |  |  |  |
 | purescript | ✓ | ✓ |  | `purescript-language-server` |
 | python | ✓ | ✓ | ✓ | `ruff`, `jedi-language-server`, `pylsp` |
@@ -202,11 +203,12 @@
 | sml | ✓ |  |  |  |
 | snakemake | ✓ |  | ✓ | `pylsp` |
 | solidity | ✓ | ✓ |  | `solc` |
+| sourcepawn | ✓ | ✓ |  | `sourcepawn-studio` |
 | spade | ✓ |  | ✓ | `spade-language-server` |
 | spicedb | ✓ |  |  |  |
 | sql | ✓ | ✓ |  |  |
 | sshclientconfig | ✓ |  |  |  |
-| starlark | ✓ | ✓ |  |  |
+| starlark | ✓ | ✓ |  | `starpls` |
 | strace | ✓ |  |  |  |
 | supercollider | ✓ |  |  |  |
 | svelte | ✓ |  | ✓ | `svelteserver` |
@@ -244,7 +246,7 @@
 | wast | ✓ |  |  |  |
 | wat | ✓ |  |  | `wat_server` |
 | webc | ✓ |  |  |  |
-| wgsl | ✓ |  |  | `wgsl_analyzer` |
+| wgsl | ✓ |  |  | `wgsl-analyzer` |
 | wit | ✓ |  | ✓ |  |
 | wren | ✓ | ✓ | ✓ |  |
 | xit | ✓ |  |  |  |

@@ -890,7 +890,7 @@ fn start_client(
         &ls_config.command,
         &ls_config.args,
         ls_config.config.clone(),
-        ls_config.environment.clone(),
+        &ls_config.environment,
         root_path,
         root_uri,
         id,
@@ -1051,7 +1051,8 @@ mod tests {
 
         let mut source = Rope::from_str("[\n\"🇺🇸\",\n\"🎄\",\n]");
 
-        let transaction = generate_transaction_from_edits(&source, edits, OffsetEncoding::Utf8);
+        let transaction = generate_transaction_from_edits(&source, edits, OffsetEncoding::Utf16);
         assert!(transaction.apply(&mut source));
+        assert_eq!(source, "[\n  \"🇺🇸\",\n  \"🎄\",\n]");
     }
 }

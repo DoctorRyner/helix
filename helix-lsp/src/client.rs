@@ -17,11 +17,14 @@ use helix_stdx::path;
 use parking_lot::Mutex;
 use serde::Deserialize;
 use serde_json::Value;
-use std::sync::{
-    atomic::{AtomicU64, Ordering},
-    Arc,
-};
 use std::{collections::HashMap, path::PathBuf};
+use std::{
+    ffi::OsStr,
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    },
+};
 use std::{future::Future, sync::OnceLock};
 use std::{path::Path, process::Stdio};
 use tokio::{
@@ -179,7 +182,7 @@ impl Client {
         cmd: &str,
         args: &[String],
         config: Option<Value>,
-        server_environment: HashMap<String, String>,
+        server_environment: impl IntoIterator<Item = (impl AsRef<OsStr>, impl AsRef<OsStr>)>,
         root_path: PathBuf,
         root_uri: Option<lsp::Url>,
         id: LanguageServerId,
@@ -1137,7 +1140,7 @@ impl Client {
         text_document: lsp::TextDocumentIdentifier,
         position: lsp::Position,
         work_done_token: Option<lsp::ProgressToken>,
-    ) -> Option<impl Future<Output = Result<Value>>> {
+    ) -> Option<impl Future<Output = Result<Option<lsp::Hover>>>> {
         let capabilities = self.capabilities.get().unwrap();
 
         // Return early if the server does not support hover.
@@ -1158,7 +1161,8 @@ impl Client {
             // lsp::SignatureHelpContext
         };
 
-        Some(self.call::<lsp::request::HoverRequest>(params))
+        let res = self.call::<lsp::request::HoverRequest>(params);
+        Some(async move { Ok(serde_json::from_value(res.await?)?) })
     }
 
     // formatting
