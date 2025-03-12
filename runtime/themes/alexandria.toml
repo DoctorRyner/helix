@@ -10,15 +10,15 @@ special = "honey"
 variable = "#bbbbbb"
 # variable = "almond" # TODO: metavariables only
 # "variable.parameter" = { fg = "lavender", modifiers = ["underlined"] }
-"variable.parameter" = { fg = "#DBDBDB", modifiers = ["italic"] }
+"variable.parameter" = { fg = "#DBDBDB" }
 "variable.builtin" = "mint"
 type = { fg = "#A6D279", modifiers = ["bold"] }
 "type.builtin" = { fg = "#A6D279", modifiers = ["bold"] }
-constructor = "#f19b99"
+constructor = "#F19593"
 "function" = { fg = "#6295E3", modifiers = [] }
 "function.macro" = { fg = "lilac", modifiers = ["italic"] }
 "function.builtin" = { fg = "#f1c67a", modifiers = ["italic"] }
-tag = { fg = "#f19b99", modifiers = ["bold"] }
+tag = { fg = "#F19593", modifiers = ["bold"] }
 "comment" = { fg = "#808080", modifiers = [] }
 constant = "#7f89c3"
 "constant.builtin" = "#7f89c3"
