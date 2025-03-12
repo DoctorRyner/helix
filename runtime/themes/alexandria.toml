@@ -51,7 +51,7 @@ label = "honey"
 "ui.statusline.inactive" = { fg = "#5d5c63", bg = "revolver" }
 "ui.bufferline" = { fg = "#5d5d63", bg = "midnight" }
 "ui.bufferline.active" = { fg = "#dedddb", bg = "revolver" }
-"ui.popup" = { bg = "#0B0D11", fg = "#61687A" }
+"ui.popup" = { bg = "#241B40", fg = "#61687A" }
 "ui.window" = { fg = "bossanova" }
 "ui.help" = { bg = "#463380", fg = "#0A0923" }
 
@@ -74,7 +74,7 @@ label = "honey"
 "ui.highlight.frameline" = { bg = "#634450" }
 "ui.debug" = { fg = "#634450" }
 "ui.debug.breakpoint" = { fg = "apricot" }
-"ui.menu" = { fg = "#DEDDDA", bg = "#0B0D11" }
+"ui.menu" = { fg = "#DEDDDA", bg = "#14181E" }
 "ui.menu.selected" = { fg = "revolver", bg = "#CBCAC7" }
 "ui.menu.scroll" = { fg = "#9a9996", bg = "#5e5c64" }
 "ui.text.directory" = { fg = "#6295E3" }
@@ -97,8 +97,8 @@ lilac = "#dbbfef"
 lavender = "#8E89DF"
 comet = "#30333a"
 bossanova = "#14171d"
-midnight = "#050505"
-revolver = "#171b22"
+midnight = "#0C0C0C"
+revolver = "#1E2531"
 
 silver = "#cccccc"
 sirocco = "#697C81"

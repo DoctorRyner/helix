@@ -95,7 +95,8 @@ l = "jump_backward"
 "S-v" = "vsplit"
 "S-h" = "hsplit"
 W = "wclose"
-b = ":echo %sh{git blame --date=short -L %{cursor_line},+1 %{buffer_name} | cut -d' ' -f1-4 | sed 's/$/)/g'}"
+b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame -p %{buffer_name} -L%{cursor_line},+1 | head -1 | cut -d' ' -f1)}"
+
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
 "ret" = ["insert_newline", "move_line_up", "insert_at_line_end", "move_line_down"]
