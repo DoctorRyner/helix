@@ -52,7 +52,7 @@ label = "honey"
 "ui.bufferline" = { fg = "#5d5d63", bg = "midnight" }
 "ui.bufferline.active" = { fg = "#dedddb", bg = "revolver" }
 "ui.popup" = { bg = "#241B40", fg = "#61687A" }
-"ui.window" = { fg = "bossanova" }
+"ui.window" = { fg = "#0F1217" }
 "ui.help" = { bg = "#463380", fg = "#0A0923" }
 
 "ui.text" = { fg = "#A7A7A7" }
@@ -68,16 +68,18 @@ label = "honey"
 "ui.cursor.select" = { bg = "delta" }
 "ui.cursor.insert" = { bg = "white" }
 "ui.cursor.match" = { fg = "#212121", bg = "#6C6999" }
-"ui.cursor" = { modifiers = ["reversed"] }
-"ui.cursorline.primary" = { bg = "bossanova" }
+# "ui.cursor" = { modifiers = ["reversed"] }
+"ui.cursor" = { bg = "#3f8df7" }
+"ui.cursorline.primary" = { bg = "#1A1A1A" }
 "ui.highlight" = { bg = "bossanova" }
 "ui.highlight.frameline" = { bg = "#634450" }
 "ui.debug" = { fg = "#634450" }
 "ui.debug.breakpoint" = { fg = "apricot" }
-"ui.menu" = { fg = "#DEDDDA", bg = "#14181E" }
+"ui.menu" = { fg = "#DEDDDA", bg = "#241B40" }
 "ui.menu.selected" = { fg = "revolver", bg = "#CBCAC7" }
 "ui.menu.scroll" = { fg = "#9a9996", bg = "#5e5c64" }
 "ui.text.directory" = { fg = "#6295E3" }
+"ui.virtual.inlay-hint" = { fg = "#373940" }
 
 "diagnostic.hint" = { fg = "#5e84be", modifiers = ["dim", "italic"] }
 "diagnostic.info" = { fg = "delta", modifiers = ["dim", "italic"] }

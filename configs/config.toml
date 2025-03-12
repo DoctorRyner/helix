@@ -2,7 +2,8 @@ theme = "alexandria"
 
 [editor.lsp]
 display-messages = true
-# display-inlay-hints = true
+display-progress-messages = true
+display-inlay-hints = true
 
 [editor.cursor-shape]
 insert = "bar"
@@ -16,6 +17,34 @@ undercurl = true
 idle-timeout = 0
 cursorline = true
 completion-trigger-len = 1
+end-of-line-diagnostics = "hint"
+scrolloff = 15
+scroll-lines = 2
+completion-timeout = 5
+color-modes = true
+popup-border = "popup"
+
+[editor.inline-diagnostics]
+cursor-line = "hint"
+other-lines = "hint"
+
+[editor.statusline]
+right = [
+  "diagnostics",
+  "workspace-diagnostics",
+  "selections", "register",
+  "position",
+  "file-encoding",
+  "file-type"
+]
+
+[editor.auto-pairs]
+'(' = ')'
+'{' = '}'
+'[' = ']'
+'"' = '"'
+'`' = '`'
+'<' = '>'
 
 [editor.auto-save]
 focus-lost = true
@@ -24,6 +53,7 @@ after-delay.timeout = 300
 
 [editor.soft-wrap]
 enable = true
+wrap-at-text-width = true
 
 [editor.indent-guides]
 render = true
