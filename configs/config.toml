@@ -2,6 +2,8 @@ theme = "alexandria"
 
 [editor.lsp]
 display-messages = true
+display-progress-messages = true
+auto-signature-help = false
 # display-inlay-hints = true
 
 [editor.cursor-shape]
@@ -16,6 +18,31 @@ undercurl = true
 idle-timeout = 0
 cursorline = true
 completion-trigger-len = 1
+# end-of-line-diagnostics = "hint"
+scrolloff = 15
+scroll-lines = 2
+completion-timeout = 5
+color-modes = true
+popup-border = "popup"
+
+[editor.statusline]
+right = [
+  "diagnostics",
+  "workspace-diagnostics",
+  "selections", "register",
+  "position",
+  "file-encoding",
+  "file-type"
+]
+
+[editor.auto-pairs]
+'(' = ')'
+'{' = '}'
+'[' = ']'
+'"' = '"'
+'`' = '`'
+'<' = '>'
+"'" = "'"
 
 [editor.auto-save]
 focus-lost = true
@@ -24,6 +51,7 @@ after-delay.timeout = 300
 
 [editor.soft-wrap]
 enable = true
+# wrap-at-text-width = true
 
 [editor.indent-guides]
 render = true
@@ -70,7 +98,7 @@ p = ":clipboard-paste-before"
 "A-down" = ["shrink_selection"]
 w = ["move_prev_word_start", "collapse_selection"]
 f = ["move_next_word_start", "collapse_selection"]
-b = ["move_prev_word_start", "collapse_selection"]
+# b = ["move_prev_word_start", "collapse_selection"]
 "minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
 "=" = "goto_line_end"
 "0" = "goto_line_start"
@@ -82,19 +110,24 @@ b = ["move_prev_word_start", "collapse_selection"]
 "C-f" = ["move_next_word_start", "collapse_selection"]
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = ["half_page_up"]
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 # t = ["insert_mode", "insert_newline"]
-t = "goto_word"
+t = "hover"
 l = "jump_backward"
 "S-l" = "jump_forward"
 "S-left" = "jump_view_left"
 "S-right" = "jump_view_right"
+# "S-A-up" = "jump_view_up"
+# "S-A-down" = "jump_view_down"
 "\"" = "jump_view_up"
 "?" = "jump_view_down"
 "S-v" = "vsplit"
 "S-h" = "hsplit"
 W = "wclose"
+b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame -p %{buffer_name} -L%{cursor_line},+1 | head -1 | cut -d' ' -f1)}"
+S-A-up = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"]
+S-A-down = ["extend_to_line_bounds", "delete_selection", "paste_after"]
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
@@ -107,31 +140,44 @@ W = "wclose"
 "down" = "move_line_down"
 "left" = "move_char_left"
 "right" = "move_char_right"
-"A-left" = "move_prev_word_start"
+"A-left" = ["move_prev_word_start", "collapse_selection"]
 "A-right" = ["move_next_word_end", "move_char_right"]
 "A-f" = ["move_next_word_end", "move_char_right", "collapse_selection"]
 "A-b" = ["move_prev_word_start", "collapse_selection"]
 # "esc" = ["normal_mode", ":w"]
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = ["half_page_up"]
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 "A-minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
 "A-=" = "goto_line_end"
 "A-0" = "goto_line_start"
+A-h = "signature_help"
+
 
 [keys.normal.space]
-q = ":write-quit"
+q = ":quit"
 c = ":buffer-close"
 f = "file_picker_in_current_directory"
 F = "file_picker"
 w = [":format", ":w"]
+t = [":reload-all", ":redraw"]
 "S-[" = ["surround_delete"]
 x = ["yank_to_clipboard", "delete_selection"]
-l = ":lsp-restart"
+# l = ":lsp-restart"
 "[" = "surround_delete"
-t = "hover"
+# t = "goto_word"
 H = ":config-reload"
+y = [ ':sh rm -f /tmp/yazi-path', ':insert-output yazi %{buffer_name} --chooser-file=/tmp/yazi-path', ":open %sh{cat /tmp/yazi-path}", ":redraw", ':set mouse false', ':set mouse true']
+B = [
+  ":write-all",
+  ":new",
+  ":insert-output lazygit",
+  ":buffer-close!",
+  ":redraw",
+  ":reload-all"
+]
+
 
 [keys.select]
 q = ":clipboard-yank"
@@ -149,12 +195,12 @@ w = "extend_prev_word_start"
 f = "extend_next_word_start"
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
-"S-up" = "half_page_up"
-"S-down" = ["half_page_down"]
+"S-up" = ["scroll_up", "scroll_up"]
+"S-down" = ["scroll_down", "scroll_down"]
 
 [keys.normal.'space'.'space']
 # Extensions using custom script
-# Interactive search in current working directory
+# Interactive search in current working }irectory
 s = ":pipe-to helix-ext search --current"
 # Interactive search in current working directory (include path name in the search)
 S = ":pipe-to helix-ext search --current-inc-path"
@@ -170,3 +216,4 @@ m = ":pipe-to helix-ext git --status"
 B = ":pipe-to helix-ext git --blame"
 # Git browse github repo using default browser
 O = ":pipe-to helix-ext git --browse"
+
