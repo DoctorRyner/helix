@@ -118,8 +118,8 @@ l = "jump_backward"
 "S-l" = "jump_forward"
 "S-left" = "jump_view_left"
 "S-right" = "jump_view_right"
-# "S-A-up" = "jump_view_up"
-# "S-A-down" = "jump_view_down"
+"S-C-up" = "jump_view_up"
+"S-C-down" = "jump_view_down"
 "\"" = "jump_view_up"
 "?" = "jump_view_down"
 "S-v" = "vsplit"
@@ -128,6 +128,7 @@ W = "wclose"
 b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame -p %{buffer_name} -L%{cursor_line},+1 | head -1 | cut -d' ' -f1)}"
 S-A-up = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"]
 S-A-down = ["extend_to_line_bounds", "delete_selection", "paste_after"]
+C = ":buffer-close"
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
@@ -157,7 +158,6 @@ A-h = "signature_help"
 
 [keys.normal.space]
 q = ":quit"
-c = ":buffer-close"
 f = "file_picker_in_current_directory"
 F = "file_picker"
 w = [":format", ":w"]
@@ -177,6 +177,7 @@ B = [
   ":redraw",
   ":reload-all"
 ]
+l = ":lsp-restart"
 
 
 [keys.select]
