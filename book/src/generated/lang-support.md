@@ -208,7 +208,7 @@
 | spicedb | ✓ |  |  |  |
 | sql | ✓ | ✓ |  |  |
 | sshclientconfig | ✓ |  |  |  |
-| starlark | ✓ | ✓ |  | `starpls` |
+| starlark | ✓ | ✓ | ✓ | `starpls` |
 | strace | ✓ |  |  |  |
 | supercollider | ✓ |  |  |  |
 | svelte | ✓ |  | ✓ | `svelteserver` |
@@ -247,6 +247,7 @@
 | wast | ✓ |  |  |  |
 | wat | ✓ |  |  | `wat_server` |
 | webc | ✓ |  |  |  |
+| werk | ✓ |  |  |  |
 | wgsl | ✓ |  |  | `wgsl-analyzer` |
 | wit | ✓ |  | ✓ |  |
 | wren | ✓ | ✓ | ✓ |  |
