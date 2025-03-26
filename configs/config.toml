@@ -78,9 +78,8 @@ hidden = false
 a = ["insert_mode", "move_char_right", "collapse_selection"]
 Y = ":yank-diagnostic"
 "$" = "goto_line_end"
-# "A-/" = "toggle_comments"
+# "C-/" = "toggle_comments"
 G = "goto_file_end"
-y = ":clipboard-yank"
 q = ":clipboard-yank"
 p = ":clipboard-paste-before"
 "§" = "select_textobject_inner"
@@ -129,6 +128,26 @@ b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame 
 S-A-up = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"]
 S-A-down = ["extend_to_line_bounds", "delete_selection", "paste_after"]
 C = ":buffer-close"
+"A-," = ":config-open"
+B = [
+  ":write-all",
+  ":new",
+  ":insert-output lazygit",
+  ":buffer-close!",
+  ":redraw",
+  ":reload-all",
+  ':set mouse false',
+  ':set mouse true'
+]
+y = [
+  ':sh rm -f /tmp/yazi-path',
+  ':insert-output yazi %{buffer_name} --chooser-file=/tmp/yazi-path',
+  ":open %sh{cat /tmp/yazi-path}",
+  ":redraw",
+  ":reload-all",
+  ':set mouse false',
+  ':set mouse true'
+]
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
@@ -161,24 +180,12 @@ q = ":quit"
 f = "file_picker_in_current_directory"
 F = "file_picker"
 w = [":format", ":w"]
-t = [":reload-all", ":redraw"]
+t = [":reload-all", ":redraw", ":lsp-restart", ":config-reload"]
 "S-[" = ["surround_delete"]
 x = ["yank_to_clipboard", "delete_selection"]
-# l = ":lsp-restart"
 "[" = "surround_delete"
-# t = "goto_word"
+T = "goto_word"
 H = ":config-reload"
-y = [ ':sh rm -f /tmp/yazi-path', ':insert-output yazi %{buffer_name} --chooser-file=/tmp/yazi-path', ":open %sh{cat /tmp/yazi-path}", ":redraw", ':set mouse false', ':set mouse true']
-B = [
-  ":write-all",
-  ":new",
-  ":insert-output lazygit",
-  ":buffer-close!",
-  ":redraw",
-  ":reload-all"
-]
-l = ":lsp-restart"
-
 
 [keys.select]
 q = ":clipboard-yank"
