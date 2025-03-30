@@ -101,7 +101,7 @@ f = ["move_next_word_start", "collapse_selection"]
 "minus" = ["goto_line_start", "move_next_word_start", "move_char_right", "collapse_selection"]
 "=" = "goto_line_end"
 "0" = "goto_line_start"
-"C-n" = ["move_char_left", "collapse_selection"]
+# "C-n" = ["move_char_left", "collapse_selection"]
 "C-o" = ["move_char_right", "collapse_selection"]
 "C-e" = ["move_line_down", "collapse_selection"]
 "C-i" = ["move_line_up", "collapse_selection"]
