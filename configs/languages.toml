@@ -1,6 +1,13 @@
+[language-server.gpt]
+command = "bun"
+args = ["run", "/usr/local/bin/helix-gpt"]
+
 [language-server.copilot]
 command = "copilot"
 args = ["--stdio"]
+
+[language-server.uwu_colors]
+command = "uwu_colors"
 
 [language-server.typescript]
 command = "typescript-language-server"
@@ -17,7 +24,7 @@ command = "typescript-language-server"
 args = ["--stdio"]
 
 [language-server.emmet-ls]
-command="emmet-ls"
+command = "emmet-ls"
 args = ["--stdio"]
 
 [language-server.efm]
@@ -66,70 +73,78 @@ mode = "location"
 
 [[language]]
 name = "typescript"
-formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+formatter = { command = "prettier", args = ["--parser", "typescript"] }
 file-types = ["ts"]
 language-servers = [
   { name = "typescript-language-server", except-features = ["format"] },
   { name = "copilot" },
-  { name = "eslint", except-features = [ "format" ] },
+  { name = "eslint", except-features = ["format"] },
   { name = "emmet-ls" },
+  { name = "uwu_colors" }
 ]
 
 [[language]]
 name = "tsx"
 formatter = { command = "prettier", args = ["--stdin-filepath", "file.tsx"] }
-file-types=["tsx"]
+file-types = ["tsx"]
 language-servers = [
   { name = "typescript-language-server", except-features = ["format"] },
   { name = "copilot" },
-  { name = "eslint", except-features = [ "format" ] },
+  { name = "eslint", except-features = ["format"] },
   { name = "emmet-ls" },
+  { name = "uwu_colors" }
 ]
 
 [[language]]
 name = "haskell"
-file-types=["hs"]
+file-types = ["hs"]
 language-servers = [
   { name = "haskell-language-server" },
   { name = "copilot" },
+  { name = "uwu_colors" }
 ]
 
 [[language]]
 name = "json"
-formatter = { command = "prettier", args = [ "--parser", "json" ] }
+formatter = { command = "prettier", args = ["--parser", "json"] }
+language-servers = ["uwu_colors"]
 
 [[language]]
 name = "yaml"
-formatter = { command = "prettier", args = [ "--parser", "yaml" ] }
-language-servers = ["yaml-language-server", "copilot"]
+formatter = { command = "prettier", args = ["--parser", "yaml"] }
+language-servers = ["yaml-language-server", "copilot", "uwu_colors"]
 
 [[language]]
 name = "html"
-language-servers = [ "vscode-html-language-server", "emmet-ls" ]
-formatter = { command = 'prettier', args = ["--parser", "html"] }
+language-servers = ["vscode-html-language-server", "emmet-ls", "uwu_colors"]
+formatter = { command = "prettier", args = ["--parser", "html"] }
 
 [[language]]
 name = "css"
-language-servers = [ "vscode-css-language-server", "emmet-ls", "copilot" ]
-formatter = { command = 'prettier', args = ["--parser", "css"] }
+language-servers = [
+  "vscode-css-language-server",
+  "emmet-ls",
+  "copilot",
+  "uwu_colors"
+]
+formatter = { command = "prettier", args = ["--parser", "css"] }
 
 [[language]]
 name = "cpp"
-language-servers = [ "clangd", "copilot" ]
+language-servers = ["clangd", "copilot", "uwu_colors"]
 
 [[language]]
 name = "svelte"
-language-servers = [ "svelteserver", "copilot" ]
+language-servers = ["svelteserver", "eslint", "uwu_colors"]
 
 [[language]]
 name = "rust"
-language-servers = [ "rust-analyzer", "copilot" ]
+language-servers = ["rust-analyzer", "copilot", "uwu_colors"]
 
 [[language]]
 name = "toml"
-language-servers = [ "taplo", "copilot" ]
+language-servers = ["taplo", "copilot", "uwu_colors"]
 
 [[language]]
 name = "go"
-language-servers = [ "gopls", "copilot" ]
-
+language-servers = ["gopls", "copilot", "uwu_colors"]

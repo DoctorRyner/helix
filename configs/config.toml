@@ -79,7 +79,7 @@ a = ["insert_mode", "move_char_right", "collapse_selection"]
 Y = ":yank-diagnostic"
 "$" = "goto_line_end"
 # "C-/" = "toggle_comments"
-G = "goto_file_end"
+G = "goto_last_line"
 q = ":clipboard-yank"
 p = ":clipboard-paste-before"
 "§" = "select_textobject_inner"
@@ -87,7 +87,7 @@ p = ":clipboard-paste-before"
 "}" = ":buffer-next"
 # "A-left" = "move_prev_word_start"
 # "A-right" = ["move_next_word_end", "move_char_right"]
-"A-left" = "goto_line_start"
+"A-left" = "goto_first_nonwhitespace"
 "A-right" = "goto_line_end"
 "A-f" = "goto_line_end"
 "A-b" = ["goto_line_start", "move_next_word_end", "move_prev_word_start", "move_char_right", "move_char_left", "collapse_selection"]
@@ -111,6 +111,8 @@ f = ["move_next_word_start", "collapse_selection"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = ["scroll_up", "scroll_up"]
 "S-down" = ["scroll_down", "scroll_down"]
+"S-i" = ["scroll_up", "scroll_up"]
+"S-e" = ["scroll_down", "scroll_down"]
 # t = ["insert_mode", "insert_newline"]
 t = "hover"
 l = "jump_backward"
@@ -123,11 +125,11 @@ l = "jump_backward"
 "?" = "jump_view_down"
 "S-v" = "vsplit"
 "S-h" = "hsplit"
-W = "wclose"
+C = "wclose"
 b = ":echo %sh{git show --no-patch --format='%%h (%%an: %%ar): %%s' $(git blame -p %{buffer_name} -L%{cursor_line},+1 | head -1 | cut -d' ' -f1)}"
 S-A-up = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"]
 S-A-down = ["extend_to_line_bounds", "delete_selection", "paste_after"]
-C = ":buffer-close"
+W = ":buffer-close"
 "A-," = ":config-open"
 B = [
   ":write-all",
@@ -148,6 +150,8 @@ y = [
   ':set mouse false',
   ':set mouse true'
 ]
+"A-i" = ["expand_selection"]
+"A-e" = ["shrink_selection"]
 
 [keys.insert]
 "S-ret" = ["open_above", "move_line_down"]
@@ -165,7 +169,6 @@ y = [
 "A-f" = ["move_next_word_end", "move_char_right", "collapse_selection"]
 "A-b" = ["move_prev_word_start", "collapse_selection"]
 # "esc" = ["normal_mode", ":w"]
-"A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = ["scroll_up", "scroll_up"]
 "S-down" = ["scroll_down", "scroll_down"]
@@ -173,6 +176,7 @@ y = [
 "A-=" = "goto_line_end"
 "A-0" = "goto_line_start"
 A-h = "signature_help"
+C-h = "signature_help"
 
 
 [keys.normal.space]
@@ -194,17 +198,20 @@ y = [":clipboard-yank", "normal_mode"]
 Y = ":yank-diagnostic"
 "0" = "goto_line_start"
 "$" = "goto_line_end"
-G = "goto_file_end"
-n = "move_char_left"
-o = "move_char_right"
-e = "move_line_down"
-i = "move_line_up"
+G = "extend_to_file_end"
+n = "extend_char_left"
+o = "extend_char_right"
+e = "extend_line_down"
+i = "extend_line_up"
 w = "extend_prev_word_start"
 f = "extend_next_word_start"
 "A-'" = ["scroll_up", "scroll_up", "scroll_up", "scroll_up"]
 "A-/" = ["scroll_down", "scroll_down", "scroll_down", "scroll_down"]
 "S-up" = ["scroll_up", "scroll_up"]
 "S-down" = ["scroll_down", "scroll_down"]
+
+[keys.select.space]
+x = ["yank_to_clipboard", "delete_selection"]
 
 [keys.normal.'space'.'space']
 # Extensions using custom script
